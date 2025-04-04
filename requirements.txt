@@ -1,0 +1,31 @@
+# Audio Processing
+numpy>=1.20.0
+scipy>=1.7.0
+librosa>=0.9.0
+sounddevice>=0.4.4
+pyaudio>=0.2.11
+soundfile>=0.10.0
+
+# Machine Learning
+torch>=1.10.0
+scikit-learn>=1.0.0
+
+# MIDI Processing
+mido>=1.2.10
+python-rtmidi>=1.4.9
+
+# OSC Communication
+python-osc>=1.8.0
+websockets>=10.0
+
+# Utilities
+pyyaml>=6.0
+matplotlib>=3.5.0
+tqdm>=4.62.0
+
+# Development
+pytest>=7.0.0
+pytest-cov>=3.0.0
+black>=22.0.0
+flake8>=4.0.0
+mypy>=0.900

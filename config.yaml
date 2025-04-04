@@ -1,0 +1,56 @@
+# Performance Suite Configuration
+
+# System Configuration
+system:
+  log_level: INFO
+  log_file: logs/performance_suite.log
+
+# Audio Configuration
+audio:
+  input_device: null  # null = system default
+  sample_rate: 44100
+  buffer_size: 1024
+  channels: 2
+  analysis_mode: "balanced"  # "low_latency", "balanced", or "high_accuracy"
+
+# MIDI Configuration
+midi:
+  input_port: null  # null = system default
+  output_port: null  # null = system default
+  clock_source: internal  # internal, external
+
+# Ableton Configuration
+ableton:
+  osc_host: 127.0.0.1
+  osc_port: 11000
+  osc_receive_port: 11001
+
+# Agent System Configuration
+agent_system:
+  session_manager:
+    update_rate: 30  # Hz
+  
+  bandmate_agents:
+    - type: drums
+      enabled: true
+      responsiveness: 0.7  # 0.0 - 1.0
+    
+    - type: bass
+      enabled: true
+      responsiveness: 0.8  # 0.0 - 1.0
+    
+    - type: keys
+      enabled: false
+      responsiveness: 0.6  # 0.0 - 1.0
+
+# Animation Control Configuration
+animation:
+  osc_host: 127.0.0.1
+  osc_port: 12000
+  update_rate: 30  # Hz
+
+# Rendering Machine Configuration
+rendering:
+  host: 127.0.0.1
+  port: 13000
+  protocol: websocket  # osc, websocket
