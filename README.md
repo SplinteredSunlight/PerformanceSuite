@@ -39,7 +39,13 @@ The Performance Suite project is currently in the initial planning and architect
 
 ## Documentation
 
-Comprehensive documentation is maintained in the [memory-bank](memory-bank/) directory:
+### Technical Documentation
+
+- [Technical Specification](docs/technical_specification.md): Comprehensive technical details including system architecture, performance requirements, hardware specifications, and more.
+
+### Memory Bank
+
+Project context and development information is maintained in the [memory-bank](memory-bank/) directory:
 
 - [Project Brief](memory-bank/projectbrief.md): Core requirements and goals
 - [Product Context](memory-bank/productContext.md): Purpose and user experience goals
@@ -47,3 +53,8 @@ Comprehensive documentation is maintained in the [memory-bank](memory-bank/) dir
 - [Technical Context](memory-bank/techContext.md): Technologies and development setup
 - [Progress](memory-bank/progress.md): Current status and implementation timeline
 - [Testing Strategy](memory-bank/testingStrategy.md): Testing approach and quality assurance
+
+### Development Resources
+
+- **Scripts**: The [scripts](scripts/) directory contains utility scripts for testing and development
+- **Schemas**: JSON schemas for data structures are located in [src/schemas](src/schemas/)

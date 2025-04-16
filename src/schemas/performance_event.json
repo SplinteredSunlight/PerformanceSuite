@@ -1,0 +1,9 @@
+{
+  "timestamp": "2025-04-04T20:23:00Z",
+  "event_type": "cue_trigger",
+  "target": "animation_agent",
+  "payload": {
+    "action": "jump",
+    "avatar_id": 1
+  }
+}

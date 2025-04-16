@@ -1,4 +1,99 @@
-# Technical Context: Performance Suite
+# Performance Suite: Comprehensive Technical Specification
+
+## Table of Contents
+1. [System Overview](#system-overview)
+2. [Performance Requirements](#performance-requirements)
+3. [Hardware Architecture](#hardware-architecture)
+4. [Software Architecture](#software-architecture)
+5. [MCP Servers Integration](#mcp-servers-integration)
+6. [Network Configuration](#network-configuration)
+7. [Data Flow and Signal Processing](#data-flow-and-signal-processing)
+8. [Initialization and Synchronization Protocols](#initialization-and-synchronization-protocols)
+9. [Error Handling and Recovery](#error-handling-and-recovery)
+10. [Monitoring and Diagnostics](#monitoring-and-diagnostics)
+11. [Testing Procedures](#testing-procedures)
+12. [Appendix: Component Configuration](#appendix-component-configuration)
+
+## System Architecture Diagram
+
+```mermaid
+graph TD
+    subgraph Machine 1 (Processing & Audio - e.g., Mac Mini M4/Pro)
+        direction LR
+        PerformerIn[Performer Input (Audio Interface: Quantum 2626, Control Surface)]
+        Ableton[Ableton Live (Sound Generation Engine)]
+        subgraph Python Agents
+            AA[Audio Analysis Agent]
+            SM[Session Manager Agent]
+            CA[Control Interface Agent]
+            BA_Group{Bandmate Agents (Drums, Bass...)}
+            MIDI_Gen[MIDI Generation Agent (controls Ableton)]
+            Anim_Ctrl[Animation Control Agent]
+            Stage_Vis[Stage Visuals Agent (Optional)]
+        end
+        PerformerIn -- Audio Stream --> AA;
+        PerformerIn -- MIDI/OSC Control --> CA;
+        AA -- Analysis Results (Chord, Tempo, Dynamics) --> SM;
+        CA -- Performer Commands --> SM;
+        SM -- Unified Musical Context --> BA_Group;
+        BA_Group -- Musical Plans --> MIDI_Gen;
+        BA_Group -- Animation Plans --> Anim_Ctrl;
+        SM -- High-Level Cues --> Stage_Vis;
+        MIDI_Gen -- AbletonOSC Commands --> Ableton;
+        Ableton -- Master Audio Out --> PA_System;
+        Anim_Ctrl -- OSC/WebSocket Commands --> Network;
+        Stage_Vis -- DMX/OSC Commands --> Network;
+    end
+
+    subgraph Machine 2 (Rendering - e.g., High-End Mac/Nvidia PC)
+        direction LR
+        subgraph Game Engine (Godot/Unity/Unreal)
+            Listener[OSC/WebSocket Listener Script]
+            SceneMgr[Scene Manager Script (Engine Logic)]
+            AvatarLoader[Avatar Loader (.glb)]
+            AnimPlayer[Animation State Machine/Player]
+            ShapeKeyCtrl[Shape Key Controller Script]
+            Renderer[Real-time Renderer]
+        end
+        Network -- OSC/WebSocket Commands --> Listener;
+        Listener -- Parsed Commands --> SceneMgr;
+        SceneMgr -- Controls --> AvatarLoader;
+        SceneMgr -- Controls --> AnimPlayer;
+        SceneMgr -- Controls --> ShapeKeyCtrl;
+        Renderer -- Rendered Video --> Display;
+    end
+
+    subgraph Outputs
+      PA_System[PA System / Monitors]
+      Display[Projector / Screens]
+      Lights[DMX Lighting Rig (Optional)]
+    end
+
+    Network -- DMX/OSC Commands --> Lights;
+```
+
+## System Overview
+
+The Performance Suite combines real-time audio processing, AI-driven musical accompaniment, and synchronized visual rendering to create an integrated multimedia performance environment. The system is designed for professional live performance scenarios where ultra-low latency (under 10ms end-to-end) is critical.
+
+### Design Philosophy
+- **Performance First**: All system decisions prioritize real-time performance and low latency
+- **Fault Tolerance**: Graceful degradation rather than catastrophic failure
+- **Modularity**: Components can be upgraded or replaced individually
+- **Scalability**: Architecture supports expansion from small to large-scale performances
+
+## Performance Requirements
+
+### Latency Requirements
+- **End-to-End System Latency**: <10ms from performer input to audiovisual output
+- **Audio Processing Latency**: <3ms from input to output
+- **Network Transit Latency**: <1ms between machines
+- **Visual Rendering Latency**: <6ms from receiving commands to display update
+
+### Processing Requirements
+- **Audio Sample Rate**: 96kHz minimum
+- **Visual Frame Rate**: 60fps minimum
+- **Control Message Rate**: 1000Hz minimum for critical performance parameters
 
 ## Hardware Architecture
 
@@ -41,27 +136,33 @@
    - Real-time analysis of incoming audio (chord detection, tempo, dynamics)
    - Implements FFT and other DSP algorithms optimized for minimal latency
    - Outputs structured analysis data to Session Manager
+
 2. **Session Manager Agent**
    - Central coordination system for all agents
    - Maintains global musical context and performance state
    - Routes commands and data between agents
    - Handles synchronization between audio and visual components
+
 3. **Control Interface Agent**
    - Processes input from performer's control surface
    - Translates physical controls to internal command structure
    - Provides feedback to performer through control surface
+
 4. **Bandmate Agents**
    - Individual agents for different virtual instruments (drums, bass, etc.)
    - AI-driven musical decision making based on performer input
    - Generates musical parts appropriate to current performance context
+
 5. **MIDI Generation Agent**
    - Translates musical decisions from Bandmate Agents to MIDI
    - Communicates with Ableton Live via AbletonOSC
    - Handles timing and synchronization of generated parts
+
 6. **Animation Control Agent**
    - Translates musical activity to animation parameters
    - Generates OSC messages for visual system
    - Synchronizes animation timing with audio events
+
 7. **Stage Visuals Agent (Optional)**
    - Controls additional stage elements (lighting, video)
    - Generates DMX, OSC, or other control signals
@@ -75,35 +176,89 @@
    - Maintains real-time communication channels
    - Buffers and prioritizes incoming commands
    - Routes MCP animation data to appropriate subsystems
+
 2. **Scene Manager Script**
    - Core logic for visual rendering decisions
    - Manages resources and rendering priorities
    - Controls loading and unloading of visual assets
    - Coordinates between traditional and MCP-driven animations
+
 3. **Avatar Loader**
    - Handles 3D character models (.glb format)
    - Manages model LOD (Level of Detail) based on performance needs
    - Pre-loads and caches avatar resources
    - Ensures rigging compatibility with MCP-generated animations
+
 4. **Animation State Machine/Player**
    - Controls character animations based on musical input
    - Handles blending between animation states
    - Synchronizes animation timing with audio events
    - Integrates with MCP-generated animation data
+
 5. **Shape Key Controller Script**
    - Manages facial animations and microexpressions
    - Controls morph targets for expressive character features
    - Synchronizes lip syncing or other precise animations
    - Applies MCP-generated facial expressions
-6. **MCP Animation Integration Module**
-   - Translates MCP animation protocols to engine-specific formats
-   - Handles real-time skeletal animation updates from MCP server
-   - Manages transition blending between different animation sources
-   - Provides fallback animations if MCP connection drops
-7. **Real-time Renderer**
+
+6. **Real-time Renderer**
    - Handles final output rendering
    - Manages shaders and visual effects
    - Optimizes for frame rate and visual quality
+
+## MCP Servers Integration
+
+### Overview
+Model Context Protocol (MCP) servers provide a powerful framework for real-time AI-driven content generation and state management. For the Performance Suite, MCP servers can enhance several key components while maintaining the sub-10ms latency requirement.
+
+### Primary MCP Server Applications
+
+#### Animation and Rigging System
+- **Dedicated MCP Server**: Animation Control Server
+- **Purpose**: Bridge between Animation Control Agent and Game Engine animation systems
+- **Key Functions**:
+  - Real-time skeletal animation generation based on musical parameters
+  - Procedural character motion that responds organically to performance
+  - Advanced blending between animation states with context awareness
+  - Facial animation and expression generation synchronized with music
+- **Latency Budget**: 1ms within the existing Animation Processing budget
+- **Hardware Requirements**: 
+  - Dedicated CPU cores (2-4 cores minimum)
+  - 8GB RAM allocation
+  - Can be hosted on Machine 2 if resources permit
+
+#### Bandmate Intelligence System
+- **Dedicated MCP Server**: Musical AI Server
+- **Purpose**: Enhance the musical decision-making of Bandmate Agents
+- **Key Functions**:
+  - Contextual understanding of musical structure and progression
+  - Stylistic adaptation based on performer's playing
+  - Dynamic response to changing performance parameters
+  - Memory of motifs and themes for musical callback and development
+- **Latency Budget**: 1ms within the existing Agent Processing budget
+- **Hardware Requirements**:
+  - Dedicated CPU cores (4-6 cores minimum)
+  - 16GB RAM allocation
+  - Preferably hosted on separate hardware for optimal performance
+
+### MCP Server Architecture
+
+#### Server Configuration
+- **Server Framework**: Node.js or Python-based
+- **Communication Protocol**: Binary WebSocket for low-latency messaging
+- **State Management**: In-memory with periodic persistence to disk
+- **Scaling Strategy**: Vertical scaling for latency-sensitive operations
+
+#### Integration Points
+1. **Animation MCP Server**:
+   - **Input**: OSC messages from Animation Control Agent (Machine 1)
+   - **Output**: Enhanced animation parameters to OSC/WebSocket Listener (Machine 2)
+   - **Connection**: Direct network link with dedicated ports
+
+2. **Musical AI MCP Server**:
+   - **Input**: Musical context data from Session Manager (Machine 1)
+   - **Output**: Enhanced musical decisions to Bandmate Agents (Machine 1)
+   - **Connection**: Could be local to Machine 1 or networked if separate hardware
 
 ## Network Configuration
 
@@ -122,26 +277,11 @@
   - 8002: Synchronization messages
   - 8003: Monitoring and status
   - 8004-8010: Reserved for future expansion
-  - 8011-8020: MCP animation server communication (UDP)
-  - 8021-8030: MCP musical AI server communication (UDP)
-  - 9000-9010: Non-time-critical machine-to-machine communication (TCP)
-  - 9011-9020: MCP server management and monitoring (TCP)
-  - 9021-9030: Reserved for future expansion (TCP)
 
 ### Quality of Service
 - **Packet Prioritization**: Critical sync messages get highest priority
 - **Traffic Shaping**: Bandwidth reservation for critical message types
 - **Redundancy**: Critical messages sent twice with sequence numbers for deduplication
-
-### Static IP Addressing
-- **Subnet**: 192.168.1.x
-- **Subnet Mask**: 255.255.255.0
-- **MCP Server IPs**: 192.168.1.10-19 reserved
-- **Machine 1 IP**: 192.168.1.20
-- **Machine 2 IP**: 192.168.1.30
-- **MTU**: 9000 (jumbo frames)
-- **Flow Control**: Enabled
-- **QoS**: Enabled with priority for OSC/audio sync packets
 
 ## Data Flow and Signal Processing
 
@@ -169,6 +309,24 @@
 1. Audio Analysis Agent → Session Manager → Musical Context → Musical AI MCP Server
 2. Musical AI MCP Server → Enhanced Musical Decisions → Bandmate Agents
 3. Bandmate Agents → MIDI Generation Agent → Ableton Live
+
+### Latency Budgeting
+| Component | Maximum Latency Budget |
+|-----------|------------------------|
+| Audio Interface Input | 0.5ms |
+| Audio Analysis | 2.0ms |
+| Agent Processing | 1.0ms |
+| Musical AI MCP Processing | 0.5ms |
+| MIDI Generation | 1.0ms |
+| Ableton Processing | 1.0ms |
+| Audio Interface Output | 0.5ms |
+| Network Transit (inter-machine) | 0.5ms |
+| Network Transit (to/from MCP) | 0.5ms |
+| OSC Processing | 0.5ms |
+| Animation MCP Processing | 0.5ms |
+| Animation Processing | 1.0ms |
+| Rendering | 0.5ms |
+| **Total End-to-End** | **10.0ms** |
 
 ## Initialization and Synchronization Protocols
 
@@ -246,6 +404,32 @@
 - **Component Tester**: Individual testing of each system component
 - **Stress Tester**: Controlled performance degradation to test boundaries
 
+## Testing Procedures
+
+### Pre-Performance Testing
+1. **System Boot Test**: Verify correct startup sequence including MCP servers
+2. **MCP Server Test**: Verify MCP server responsiveness and correct operation
+3. **Audio Pathway Test**: Verify audio signal integrity
+4. **Visual Rendering Test**: Verify visual output quality and frame rate
+5. **Animation Quality Test**: Verify MCP-driven animation quality and responsiveness
+6. **Network Test**: Verify connection speed and packet transit times including MCP communication
+7. **End-to-End Latency Test**: Measure total system response time
+8. **MCP Failover Test**: Verify graceful degradation when MCP servers are unavailable
+9. **Resource Headroom Test**: Verify sufficient system resources
+
+### Latency Measurement Methodology
+- **Audio Testing**: Loopback test from output to input with waveform analysis
+- **Visual Testing**: High-speed camera capture of visual reaction to audio event
+- **End-to-End Testing**: Click-to-flash test with measurement of elapsed time
+
+### Performance Benchmarks
+- **Audio Processing**: <3ms for full audio chain
+- **Visual Rendering**: Stable 60fps minimum
+- **Network Transit**: <1ms packet transit time
+- **MCP Server Processing**: <1ms for animation calculations
+- **MCP Network Round-trip**: <2ms for complete request-response cycle
+- **Overall Responsiveness**: <10ms from input to output
+
 ## Appendix: Component Configuration
 
 ### Quantum 2626 Configuration
@@ -282,65 +466,3 @@
   - websockets (for MCP server communication)
   - protobuf (for efficient binary serialization)
   - asyncio (for asynchronous communication with MCP servers)
-
-### MCP Server Environment Setup
-- **Node.js Version**: 18+ LTS
-- **Key Dependencies**:
-  - ws (WebSocket library)
-  - binary-serializer
-  - node-osc
-  - fast-json-stringify
-  - worker_threads (for parallel processing)
-  - sharp (for image processing if needed)
-  - mcp-core (core MCP server framework)
-  - mcp-animation (animation-specific MCP extensions)
-  - mcp-music (music-specific MCP extensions)
-- **Alternative Python-based MCP**:
-  - Python 3.11+
-  - FastAPI for API endpoints
-  - Pydantic for data validation
-  - uvloop for improved asyncio performance
-  - websockets for WebSocket communication
-  - numpy for numerical processing
-  - jax for accelerated ML operations if needed
-
-### Game Engine Configuration
-- **Unity-specific**:
-  - Use the Burst Compiler for performance-critical code
-  - Implement custom DOTS (Data-Oriented Technology Stack) systems
-  - Disable VSync
-  - Set target frame rate to 120fps
-  - Use GPU instancing for multiple similar objects
-  - Implement MCP integration via custom C# scripts
-- **Unreal-specific**:
-  - Enable high performance mode
-  - Use Nanite for geometry where appropriate
-  - Implement Niagara for optimized particle systems
-  - Use forward rendering path for lower latency
-  - Disable Temporal AA in favor of FXAA
-  - Connect to MCP server via Blueprint or C++ interface
-- **Godot-specific**:
-  - Use GDExtension for performance-critical code
-  - Implement custom shaders for specialized visual effects
-  - Configure for GLES3 rendering
-  - Disable VSync
-  - Set process priority to high
-  - Interface with MCP via GDScript or C# scripts
-
-## Operating System Optimizations
-
-#### macOS (Machine 1)
-- Disable App Nap
-- Disable automatic updates
-- Disable Spotlight indexing for performance drives
-- Configure power management for highest performance
-- Disable screen saver and sleep mode
-- Quit all non-essential applications and background services
-
-#### Windows (Machine 2, if applicable)
-- Set power plan to "Ultimate Performance"
-- Disable Windows updates during performance
-- Disable visual effects
-- Set process priority for game engine to "High"
-- Disable all non-essential services and background applications
-- Turn off Xbox Game Bar and other overlays

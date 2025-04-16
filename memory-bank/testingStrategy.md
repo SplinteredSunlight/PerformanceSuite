@@ -268,12 +268,20 @@ graph TD
 - **Latency Profiling**: Identify bottlenecks in the processing chain
 - **Jitter Analysis**: Measure variability in processing time
 
+#### Latency Measurement Methodology
+- **Audio Testing**: Loopback test from output to input with waveform analysis
+- **Visual Testing**: High-speed camera capture of visual reaction to audio event
+- **End-to-End Testing**: Click-to-flash test with measurement of elapsed time
+- **MCP Server Testing**: Round-trip time measurement for server requests
+
 ### Reliability Testing
 
 - **Long-Running Tests**: Verify stability over extended periods
 - **Chaos Testing**: Introduce random failures to test recovery
 - **Resource Limitation Tests**: Test behavior under resource constraints
 - **Fault Injection**: Deliberately introduce faults to test error handling
+- **MCP Server Failover**: Test automatic switching to backup servers
+- **Degraded Mode Operation**: Verify graceful degradation through all levels
 
 ### User Experience Testing
 
@@ -281,3 +289,24 @@ graph TD
 - **Blind Comparison**: Compare system output with human performances
 - **Usability Testing**: Evaluate ease of use for performers
 - **Audience Perception**: Assess audience reaction to performances
+
+## Pre-Performance Testing Procedures
+
+1. **System Boot Test**: Verify correct startup sequence including MCP servers
+2. **MCP Server Test**: Verify MCP server responsiveness and correct operation
+3. **Audio Pathway Test**: Verify audio signal integrity
+4. **Visual Rendering Test**: Verify visual output quality and frame rate
+5. **Animation Quality Test**: Verify MCP-driven animation quality and responsiveness
+6. **Network Test**: Verify connection speed and packet transit times including MCP communication
+7. **End-to-End Latency Test**: Measure total system response time
+8. **MCP Failover Test**: Verify graceful degradation when MCP servers are unavailable
+9. **Resource Headroom Test**: Verify sufficient system resources
+
+## Performance Benchmarks
+
+- **Audio Processing**: <3ms for full audio chain
+- **Visual Rendering**: Stable 60fps minimum
+- **Network Transit**: <1ms packet transit time
+- **MCP Server Processing**: <1ms for animation calculations
+- **MCP Network Round-trip**: <2ms for complete request-response cycle
+- **Overall Responsiveness**: <10ms from input to output

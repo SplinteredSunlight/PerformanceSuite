@@ -2,39 +2,72 @@
 
 ## System Architecture
 
-The Performance Suite follows a distributed architecture split across two machines:
+The Performance Suite follows a distributed architecture split across two machines with optional MCP server integration:
 
 ```mermaid
 graph TD
-    subgraph Machine 1 [Processing & Audio]
-        AudioInput[Audio Input Processing]
-        ControlInput[Control Surface Input]
-        AgentSystem[AI Agent System]
-        MIDIGeneration[MIDI Generation]
-        AnimationControl[Animation Control]
-        AbletonInterface[Ableton Live Interface]
+    subgraph Machine 1 [Processing & Audio - e.g., Mac Mini M4/Pro]
+        direction LR
+        PerformerIn[Performer Input (Audio Interface: Quantum 2626, Control Surface)]
+        Ableton[Ableton Live (Sound Generation Engine)]
+        subgraph Python Agents
+            AA[Audio Analysis Agent]
+            SM[Session Manager Agent]
+            CA[Control Interface Agent]
+            BA_Group{Bandmate Agents (Drums, Bass...)}
+            MIDI_Gen[MIDI Generation Agent (controls Ableton)]
+            Anim_Ctrl[Animation Control Agent]
+            Stage_Vis[Stage Visuals Agent (Optional)]
+        end
+        PerformerIn -- Audio Stream --> AA;
+        PerformerIn -- MIDI/OSC Control --> CA;
+        AA -- Analysis Results (Chord, Tempo, Dynamics) --> SM;
+        CA -- Performer Commands --> SM;
+        SM -- Unified Musical Context --> BA_Group;
+        BA_Group -- Musical Plans --> MIDI_Gen;
+        BA_Group -- Animation Plans --> Anim_Ctrl;
+        SM -- High-Level Cues --> Stage_Vis;
+        MIDI_Gen -- AbletonOSC Commands --> Ableton;
+        Ableton -- Master Audio Out --> PA_System;
+        Anim_Ctrl -- OSC/WebSocket Commands --> Network;
+        Stage_Vis -- DMX/OSC Commands --> Network;
+    end
+
+    subgraph Machine 2 [Rendering - e.g., High-End Mac/Nvidia PC]
+        direction LR
+        subgraph Game Engine [Godot/Unity/Unreal]
+            Listener[OSC/WebSocket Listener Script]
+            SceneMgr[Scene Manager Script (Engine Logic)]
+            AvatarLoader[Avatar Loader (.glb)]
+            AnimPlayer[Animation State Machine/Player]
+            ShapeKeyCtrl[Shape Key Controller Script]
+            Renderer[Real-time Renderer]
+        end
+        Network -- OSC/WebSocket Commands --> Listener;
+        Listener -- Parsed Commands --> SceneMgr;
+        SceneMgr -- Controls --> AvatarLoader;
+        SceneMgr -- Controls --> AnimPlayer;
+        SceneMgr -- Controls --> ShapeKeyCtrl;
+        Renderer -- Rendered Video --> Display;
+    end
+
+    subgraph Outputs
+      PA_System[PA System / Monitors]
+      Display[Projector / Screens]
+      Lights[DMX Lighting Rig (Optional)]
+    end
+
+    Network -- DMX/OSC Commands --> Lights;
+    
+    subgraph MCP Servers [Optional]
+        Animation_MCP[Animation Control Server]
+        Musical_AI_MCP[Musical AI Server]
     end
     
-    subgraph Machine 2 [Rendering]
-        NetworkListener[Network Listener]
-        SceneManagement[Scene Management]
-        AvatarSystem[Avatar System]
-        AnimationSystem[Animation System]
-        RenderingEngine[Rendering Engine]
-    end
-    
-    AudioInput --> AgentSystem
-    ControlInput --> AgentSystem
-    AgentSystem --> MIDIGeneration
-    AgentSystem --> AnimationControl
-    MIDIGeneration --> AbletonInterface
-    AnimationControl --> NetworkListener
-    
-    NetworkListener --> SceneManagement
-    SceneManagement --> AvatarSystem
-    SceneManagement --> AnimationSystem
-    AvatarSystem --> RenderingEngine
-    AnimationSystem --> RenderingEngine
+    Anim_Ctrl -- Animation Parameters --> Animation_MCP
+    Animation_MCP -- Enhanced Animation Data --> Listener
+    SM -- Musical Context --> Musical_AI_MCP
+    Musical_AI_MCP -- Enhanced Musical Decisions --> BA_Group
 ```
 
 ### Machine 1: Processing & Audio
@@ -50,6 +83,11 @@ graph TD
 - Manages 3D avatars and their animations
 - Renders the visual output for display
 - Handles visual effects and scene management
+
+### MCP Servers (Optional)
+- Provide enhanced AI capabilities while maintaining low latency
+- Animation Control Server: Generates sophisticated animation data
+- Musical AI Server: Enhances musical decision-making
 
 ## Key Technical Decisions
 
@@ -78,6 +116,12 @@ graph TD
    - Plug-and-play architecture for different agent types
    - Configurable system to adapt to different performance needs
 
+6. **MCP Server Integration**:
+   - Model Context Protocol servers for enhanced AI capabilities
+   - Separate servers for animation and musical intelligence
+   - Designed for ultra-low latency (<1ms processing time)
+   - Graceful degradation if servers become unavailable
+
 ## Design Patterns
 
 1. **Observer Pattern**:
@@ -105,6 +149,11 @@ graph TD
    - Animation state management for avatars
    - System mode transitions (setup, rehearsal, performance)
 
+6. **Graceful Degradation Pattern**:
+   - Defined degradation levels for system components
+   - Automatic fallback to simpler processing when needed
+   - Prioritization of audio functionality over visual complexity
+
 ## Component Relationships
 
 ### Audio Analysis Chain:
@@ -119,14 +168,19 @@ Performer Input → Control Interface Agent → Session Manager → Bandmate Age
 
 ### Animation Pipeline:
 ```
-Musical Events → Animation Control Agent → OSC/WebSocket → Rendering Machine → Avatar Animation System → Display
+Musical Events → Animation Control Agent → Animation MCP Server → OSC/WebSocket → Rendering Machine → Avatar Animation System → Display
+```
+
+### MCP Musical Intelligence Path:
+```
+Audio Analysis Agent → Session Manager → Musical Context → Musical AI MCP Server → Enhanced Musical Decisions → Bandmate Agents
 ```
 
 ## Critical Implementation Paths
 
 1. **Audio Analysis Path**:
    - Critical for responsive musical interaction
-   - Must maintain sub-50ms latency from input to analysis results
+   - Must maintain sub-3ms latency from input to analysis results
    - Requires efficient signal processing algorithms
 
 2. **MIDI Generation Path**:
@@ -140,6 +194,30 @@ Musical Events → Animation Control Agent → OSC/WebSocket → Rendering Machi
    - Needs fault tolerance for network hiccups
 
 4. **Rendering Pipeline**:
-   - Must maintain consistent frame rate for smooth visual experience
+   - Must maintain consistent frame rate (60fps minimum) for smooth visual experience
    - Requires optimization for real-time performance
    - Needs synchronization with audio events for convincing performance
+
+5. **MCP Server Communication**:
+   - Must maintain sub-1ms round-trip time for MCP server requests
+   - Requires efficient binary serialization for data exchange
+   - Needs automatic failover mechanisms if servers become unresponsive
+
+## Latency Budgeting
+
+| Component | Maximum Latency Budget |
+|-----------|------------------------|
+| Audio Interface Input | 0.5ms |
+| Audio Analysis | 2.0ms |
+| Agent Processing | 1.0ms |
+| Musical AI MCP Processing | 0.5ms |
+| MIDI Generation | 1.0ms |
+| Ableton Processing | 1.0ms |
+| Audio Interface Output | 0.5ms |
+| Network Transit (inter-machine) | 0.5ms |
+| Network Transit (to/from MCP) | 0.5ms |
+| OSC Processing | 0.5ms |
+| Animation MCP Processing | 0.5ms |
+| Animation Processing | 1.0ms |
+| Rendering | 0.5ms |
+| **Total End-to-End** | **10.0ms** |

@@ -1,0 +1,18 @@
+{
+  "customModes": [
+    {
+      "slug": "advanced-orchestrator",
+      "name": "Advanced Orchestrator",
+      "roleDefinition": "You are Roo, an advanced orchestrator managing complex workflows by breaking down tasks and delegating them to specialized modes within this project.",
+      "groups": [
+        "read",
+        "edit",
+        "command",
+        "mcp",
+        "new_task",
+        "switch_mode"
+      ],
+      "source": "project"
+    }
+  ]
+}
