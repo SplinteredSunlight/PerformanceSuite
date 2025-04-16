@@ -1,0 +1,65 @@
+# Performance Suite Project Configuration
+
+name: Performance Suite Development
+description: Project board for tracking development of the Performance Suite
+
+# Project columns/statuses
+statuses:
+  - name: Backlog
+    description: Tasks that are planned but not yet scheduled
+    type: backlog
+  - name: To Do
+    description: Tasks that are ready to be worked on
+    type: todo
+  - name: In Progress
+    description: Tasks that are currently being worked on
+    type: in_progress
+  - name: Review
+    description: Tasks that are completed and awaiting review
+    type: review
+  - name: Done
+    description: Tasks that are completed and reviewed
+    type: done
+
+# Custom fields
+fields:
+  - name: Priority
+    type: single_select
+    options:
+      - name: 🔥 High
+        color: "#B60205"
+      - name: 🔶 Medium
+        color: "#D93F0B"
+      - name: 🔷 Low
+        color: "#0E8A16"
+  
+  - name: Component
+    type: single_select
+    options:
+      - name: Audio Processing
+        color: "#1D76DB"
+      - name: MIDI Generation
+        color: "#0075CA"
+      - name: AI Bandmates
+        color: "#A2EEEF"
+      - name: Visual Components
+        color: "#8250DF"
+      - name: Control Interface
+        color: "#D4C5F9"
+      - name: Infrastructure
+        color: "#FBCA04"
+      - name: Documentation
+        color: "#D876E3"
+
+  - name: Effort
+    type: single_select
+    options:
+      - name: Small
+        color: "#0E8A16"
+      - name: Medium
+        color: "#FBCA04"
+      - name: Large
+        color: "#B60205"
+
+  - name: Milestone
+    type: milestone

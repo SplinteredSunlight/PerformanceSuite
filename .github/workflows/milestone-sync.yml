@@ -1,0 +1,105 @@
+name: Milestone Sync
+
+on:
+  push:
+    paths:
+      - '.github/projects/milestones.yml'
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  sync-milestones:
+    name: Sync Milestones
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml requests
+          
+      - name: Sync milestones
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          cat > sync_milestones.py << 'EOF'
+          import os
+          import yaml
+          import requests
+          import datetime
+          
+          # Configuration
+          repo = os.environ['REPO']
+          token = os.environ['GITHUB_TOKEN']
+          api_url = f"https://api.github.com/repos/{repo}/milestones"
+          headers = {
+              "Accept": "application/vnd.github.v3+json",
+              "Authorization": f"token {token}"
+          }
+          
+          # Load milestones from config
+          with open('.github/projects/milestones.yml', 'r') as file:
+              config = yaml.safe_load(file)
+              
+          # Get existing milestones
+          response = requests.get(api_url, headers=headers)
+          response.raise_for_status()
+          existing_milestones = {m['title']: m for m in response.json()}
+          
+          # Process milestones
+          for milestone in config['milestones']:
+              title = milestone['title']
+              description = milestone.get('description', '')
+              due_date = milestone.get('due_date', None)
+              
+              # Format due date for API
+              if due_date:
+                  due_date = f"{due_date}T23:59:59Z"
+              
+              # Create or update milestone
+              if title in existing_milestones:
+                  # Update existing milestone
+                  milestone_id = existing_milestones[title]['number']
+                  update_url = f"{api_url}/{milestone_id}"
+                  data = {
+                      "title": title,
+                      "description": description,
+                      "due_on": due_date
+                  }
+                  response = requests.patch(update_url, headers=headers, json=data)
+                  response.raise_for_status()
+                  print(f"Updated milestone: {title}")
+              else:
+                  # Create new milestone
+                  data = {
+                      "title": title,
+                      "description": description,
+                      "due_on": due_date,
+                      "state": "open"
+                  }
+                  response = requests.post(api_url, headers=headers, json=data)
+                  response.raise_for_status()
+                  print(f"Created milestone: {title}")
+          
+          # Close milestones not in config
+          config_titles = [m['title'] for m in config['milestones']]
+          for title, milestone in existing_milestones.items():
+              if title not in config_titles and milestone['state'] == 'open':
+                  milestone_id = milestone['number']
+                  update_url = f"{api_url}/{milestone_id}"
+                  data = {"state": "closed"}
+                  response = requests.patch(update_url, headers=headers, json=data)
+                  response.raise_for_status()
+                  print(f"Closed milestone: {title}")
+          EOF
+          
+          python sync_milestones.py

@@ -42,6 +42,9 @@ The Performance Suite project is currently in the initial planning and architect
 ### Technical Documentation
 
 - [Technical Specification](docs/technical_specification.md): Comprehensive technical details including system architecture, performance requirements, hardware specifications, and more.
+- [GitHub Project Setup](docs/github_project_setup.md): Instructions for setting up and configuring the GitHub Project for development tracking.
+- [Manual GitHub Project Setup](docs/github_project_setup_manual.md): Manual setup instructions for GitHub Projects.
+- [GitHub Project Setup Success](docs/github_project_setup_success.md): Details of the successfully configured GitHub Project.
 
 ### Memory Bank
 
@@ -58,3 +61,29 @@ Project context and development information is maintained in the [memory-bank](m
 
 - **Scripts**: The [scripts](scripts/) directory contains utility scripts for testing and development
 - **Schemas**: JSON schemas for data structures are located in [src/schemas](src/schemas/)
+
+## Development
+
+### GitHub Project
+
+The project uses GitHub Projects for task management and tracking. The configuration includes:
+
+- **Custom Fields**: Priority, Component, Effort, and Milestone
+- **Views**: Board, Roadmap, Component, Priority, and All Items
+- **Automation**: Workflows for issue and PR management
+
+To set up the GitHub Project:
+
+1. Follow the instructions in the [Manual GitHub Project Setup Guide](docs/github_project_setup_manual.md)
+2. GitHub has deprecated the classic Projects API, but you can still automate with GraphQL:
+   - Use `scripts/setup_github_project_graphql.py` to create a project with GraphQL
+   - Use `.github/workflows/project-automation-graphql.yml` for automated project management
+   - See the [GitHub Project Setup Success](docs/github_project_setup_success.md) document for details on the configured project
+
+### Contributing
+
+Please see the [Contributing Guidelines](CONTRIBUTING.md) for information on how to contribute to the project.
+
+## License
+
+This project is licensed under the terms of the [LICENSE](LICENSE) file.

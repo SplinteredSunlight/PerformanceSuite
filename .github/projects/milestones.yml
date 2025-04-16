@@ -1,0 +1,42 @@
+# Performance Suite Milestones Configuration
+
+milestones:
+  - title: "v0.1.0 - Initial Setup"
+    description: "Project structure, basic components, and CI/CD setup"
+    due_date: "2025-05-15"
+    
+  - title: "v0.2.0 - Audio Processing Core"
+    description: "Basic audio analysis and processing functionality"
+    due_date: "2025-06-15"
+    
+  - title: "v0.3.0 - MIDI Generation"
+    description: "MIDI generation and Ableton Live integration"
+    due_date: "2025-07-15"
+    
+  - title: "v0.4.0 - AI Bandmates"
+    description: "Initial implementation of AI bandmate agents"
+    due_date: "2025-08-15"
+    
+  - title: "v0.5.0 - Visual Components"
+    description: "Basic avatar animations and stage visuals"
+    due_date: "2025-09-15"
+    
+  - title: "v0.6.0 - Control Interface"
+    description: "MIDI/OSC control surface integration and performer commands"
+    due_date: "2025-10-15"
+    
+  - title: "v0.7.0 - System Integration"
+    description: "Integration of all components and two-machine architecture"
+    due_date: "2025-11-15"
+    
+  - title: "v0.8.0 - Performance Testing"
+    description: "Latency optimization and stability testing"
+    due_date: "2025-12-15"
+    
+  - title: "v0.9.0 - Beta Release"
+    description: "Feature-complete beta version for testing"
+    due_date: "2026-01-15"
+    
+  - title: "v1.0.0 - Initial Release"
+    description: "First stable release with all core features"
+    due_date: "2026-02-15"

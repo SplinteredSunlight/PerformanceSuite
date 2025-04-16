@@ -1,0 +1,68 @@
+# Performance Suite Project Views Configuration
+
+views:
+  - name: Board
+    type: board
+    fields:
+      - Status
+    configuration:
+      group_by:
+        - field: Status
+          direction: asc
+      filter_by:
+        - field: Status
+          operator: not_equals
+          value: Done
+
+  - name: Roadmap
+    type: roadmap
+    fields:
+      - Status
+      - Milestone
+    configuration:
+      group_by:
+        - field: Milestone
+          direction: asc
+      filter_by:
+        - field: Status
+          operator: not_equals
+          value: Done
+
+  - name: Component View
+    type: board
+    fields:
+      - Status
+      - Component
+    configuration:
+      group_by:
+        - field: Component
+          direction: asc
+      filter_by:
+        - field: Status
+          operator: not_equals
+          value: Done
+
+  - name: Priority View
+    type: board
+    fields:
+      - Status
+      - Priority
+    configuration:
+      group_by:
+        - field: Priority
+          direction: asc
+      filter_by:
+        - field: Status
+          operator: not_equals
+          value: Done
+
+  - name: All Items
+    type: table
+    fields:
+      - Status
+      - Component
+      - Priority
+      - Effort
+      - Milestone
+    configuration:
+      filter_by: []

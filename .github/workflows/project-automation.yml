@@ -1,0 +1,80 @@
+name: Project Automation
+
+on:
+  issues:
+    types: [opened, labeled, unlabeled, assigned, unassigned, closed, reopened]
+  pull_request:
+    types: [opened, labeled, unlabeled, assigned, unassigned, closed, reopened, ready_for_review]
+
+jobs:
+  issue_opened:
+    name: Process New Issue
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues' && github.event.action == 'opened'
+    steps:
+      - name: Add to project
+        uses: actions/add-to-project@v0.5.0
+        with:
+          project-url: https://github.com/orgs/SplinteredSunlight/projects/1
+          github-token: ${{ secrets.PROJECT_TOKEN }}
+      
+      - name: Set to Backlog
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.PROJECT_TOKEN }}
+          script: |
+            const issue = context.payload.issue;
+            // This is a placeholder for the actual API calls to set status
+            // GitHub's GraphQL API would be used here in a real implementation
+            console.log(`Setting issue #${issue.number} to Backlog status`);
+
+  pr_opened:
+    name: Process New PR
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    steps:
+      - name: Add to project
+        uses: actions/add-to-project@v0.5.0
+        with:
+          project-url: https://github.com/orgs/SplinteredSunlight/projects/1
+          github-token: ${{ secrets.PROJECT_TOKEN }}
+      
+      - name: Set to In Progress
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.PROJECT_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            // This is a placeholder for the actual API calls to set status
+            // GitHub's GraphQL API would be used here in a real implementation
+            console.log(`Setting PR #${pr.number} to In Progress status`);
+
+  pr_ready_for_review:
+    name: PR Ready for Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'ready_for_review'
+    steps:
+      - name: Set to Review
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.PROJECT_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            // This is a placeholder for the actual API calls to set status
+            // GitHub's GraphQL API would be used here in a real implementation
+            console.log(`Setting PR #${pr.number} to Review status`);
+
+  item_closed:
+    name: Process Closed Item
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'issues' || github.event_name == 'pull_request') && github.event.action == 'closed'
+    steps:
+      - name: Set to Done
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.PROJECT_TOKEN }}
+          script: |
+            const item = context.payload.issue || context.payload.pull_request;
+            // This is a placeholder for the actual API calls to set status
+            // GitHub's GraphQL API would be used here in a real implementation
+            console.log(`Setting item #${item.number} to Done status`);

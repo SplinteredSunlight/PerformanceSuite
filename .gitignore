@@ -122,3 +122,8 @@ Backup/
 logs/
 data/test_samples/
 config.local.yaml
+
+# Roo Code testing files
+test_roo_operations.py
+test_apply_diff.xml
+test_diff.txt

@@ -1,0 +1,168 @@
+name: Project Automation (GraphQL)
+
+on:
+  issues:
+    types: [opened, labeled, unlabeled, assigned, unassigned, closed, reopened]
+  pull_request:
+    types: [opened, labeled, unlabeled, assigned, unassigned, closed, reopened, ready_for_review]
+
+jobs:
+  add_to_project:
+    name: Add to Project
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add Issue or PR to Project
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Get the issue or PR number
+            const itemId = context.payload.issue?.node_id || context.payload.pull_request?.node_id;
+            if (!itemId) {
+              console.log('No issue or PR found');
+              return;
+            }
+            
+            // Project ID - Performance Suite Development project
+            const projectId = 'PVT_kwHOALNOas4A2184';
+            
+            // GraphQL mutation to add item to project
+            const addToProjectMutation = `
+              mutation($projectId: ID!, $itemId: ID!) {
+                addProjectV2ItemById(input: {
+                  projectId: $projectId
+                  contentId: $itemId
+                }) {
+                  item {
+                    id
+                  }
+                }
+              }
+            `;
+            
+            try {
+              // Add the item to the project
+              const result = await github.graphql(addToProjectMutation, {
+                projectId: projectId,
+                itemId: itemId
+              });
+              
+              console.log(`Added item to project: ${result.addProjectV2ItemById.item.id}`);
+            } catch (error) {
+              console.error(`Error adding item to project: ${error}`);
+            }
+
+  update_status:
+    name: Update Item Status
+    runs-on: ubuntu-latest
+    needs: add_to_project
+    steps:
+      - name: Update Status Field
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Get the issue or PR number
+            const itemId = context.payload.issue?.node_id || context.payload.pull_request?.node_id;
+            if (!itemId) {
+              console.log('No issue or PR found');
+              return;
+            }
+            
+            // Project ID and field IDs
+            const projectId = 'PVT_kwHOALNOas4A2184';
+            const statusFieldId = 'PVTSSF_lAHOALNOas4A2184zgsFPEw'; // Status field ID
+            const priorityFieldId = 'PVTSSF_lAHOALNOas4A2184zgsFQFM'; // Priority field ID
+            const componentFieldId = 'PVTSSF_lAHOALNOas4A2184zgsFQGw'; // Component field ID
+            const effortFieldId = 'PVTSSF_lAHOALNOas4A2184zgsFQHk'; // Effort field ID
+            
+            // Status options from the GraphQL query
+            const statusOptions = {
+              'Todo': 'f75ad846',
+              'In Progress': '47fc9ee4',
+              'Done': '98236657'
+            };
+            
+            // Determine the status value based on the event
+            let statusValue;
+            if (context.payload.action === 'opened') {
+              if (context.payload.issue) {
+                statusValue = 'Todo'; // New issues go to Todo
+              } else if (context.payload.pull_request) {
+                statusValue = 'In Progress'; // New PRs go to In Progress
+              }
+            } else if (context.payload.action === 'closed') {
+              statusValue = 'Done'; // Closed items go to Done
+            } else if (context.payload.action === 'ready_for_review' && context.payload.pull_request) {
+              statusValue = 'In Progress'; // PRs ready for review go to In Progress (no Review status)
+            }
+            
+            if (!statusValue) {
+              console.log('No status update needed');
+              return;
+            }
+            
+            // First, get the project item ID
+            const getItemQuery = `
+              query($projectId: ID!, $itemId: ID!) {
+                node(id: $projectId) {
+                  ... on ProjectV2 {
+                    items(first: 1, filter: {contentIds: [$itemId]}) {
+                      nodes {
+                        id
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+            
+            try {
+              // Get the project item ID
+              const itemResult = await github.graphql(getItemQuery, {
+                projectId: projectId,
+                itemId: itemId
+              });
+              
+              const projectItemId = itemResult.node.items.nodes[0]?.id;
+              if (!projectItemId) {
+                console.log('Item not found in project');
+                return;
+              }
+              
+              // Get the option ID for the status value
+              const optionId = statusOptions[statusValue];
+              if (!optionId) {
+                console.log(`Status option "${statusValue}" not found`);
+                return;
+              }
+              
+              // Update the status field
+              const updateFieldMutation = `
+                mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+                  updateProjectV2ItemFieldValue(input: {
+                    projectId: $projectId
+                    itemId: $itemId
+                    fieldId: $fieldId
+                    value: { 
+                      singleSelectOptionId: $optionId
+                    }
+                  }) {
+                    projectV2Item {
+                      id
+                    }
+                  }
+                }
+              `;
+              
+              const updateResult = await github.graphql(updateFieldMutation, {
+                projectId: projectId,
+                itemId: projectItemId,
+                fieldId: statusFieldId,
+                optionId: optionId
+              });
+              
+              console.log(`Updated status to "${statusValue}" for item: ${updateResult.updateProjectV2ItemFieldValue.projectV2Item.id}`);
+            } catch (error) {
+              console.error(`Error updating status: ${error}`);
+            }
