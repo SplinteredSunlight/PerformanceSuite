@@ -1,0 +1,14 @@
+# Git attributes for specific files
+# This file tells Git how to handle specific files
+
+# Ignore changes to config.yaml
+config.yaml binary
+config.yaml -diff
+config.yaml -merge
+config.yaml -text
+
+# Ignore changes to .roo/system-prompt-architect
+.roo/system-prompt-architect binary
+.roo/system-prompt-architect -diff
+.roo/system-prompt-architect -merge
+.roo/system-prompt-architect -text
