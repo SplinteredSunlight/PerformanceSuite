@@ -1,3 +1,165 @@
 {
-  "mcpServers": {}
+  "mcpServers": {
+    "task-manager": {
+      "type": "stdio",
+      "command": ["python", "scripts/task_manager_mcp.py"],
+      "description": "Task Management MCP Server for Memory Bank integration",
+      "tools": [
+        {
+          "name": "list_tasks",
+          "description": "Lists all tasks from taskManagement.md",
+          "parameters": [
+            {
+              "name": "status",
+              "description": "Filter tasks by status (Not Started, In Progress, Blocked, Completed)",
+              "required": false
+            },
+            {
+              "name": "component",
+              "description": "Filter tasks by component (Audio Analysis, Agent System, Rendering, Infrastructure)",
+              "required": false
+            }
+          ]
+        },
+        {
+          "name": "create_task",
+          "description": "Creates a new task in taskManagement.md",
+          "parameters": [
+            {
+              "name": "title",
+              "description": "Task title",
+              "required": true
+            },
+            {
+              "name": "description",
+              "description": "Detailed description of the task",
+              "required": true
+            },
+            {
+              "name": "component",
+              "description": "Component (Audio Analysis, Agent System, Rendering, Infrastructure)",
+              "required": true
+            },
+            {
+              "name": "priority",
+              "description": "Priority (High, Medium, Low)",
+              "required": true
+            },
+            {
+              "name": "effort",
+              "description": "Effort (Large, Medium, Small)",
+              "required": true
+            },
+            {
+              "name": "dependencies",
+              "description": "Comma-separated list of task IDs this task depends on",
+              "required": false
+            }
+          ]
+        },
+        {
+          "name": "update_task",
+          "description": "Updates an existing task's status or details",
+          "parameters": [
+            {
+              "name": "task_id",
+              "description": "Task ID (e.g., MB-001)",
+              "required": true
+            },
+            {
+              "name": "status",
+              "description": "New status (Not Started, In Progress, Blocked, Completed)",
+              "required": false
+            },
+            {
+              "name": "notes",
+              "description": "Additional notes to append to the task",
+              "required": false
+            }
+          ]
+        },
+        {
+          "name": "get_task_statistics",
+          "description": "Gets statistics about tasks (total, completed, etc.)",
+          "parameters": []
+        }
+      ]
+    },
+    "github-desktop": {
+      "type": "stdio",
+      "command": ["python", "scripts/github_desktop_mcp.py"],
+      "description": "GitHub Desktop integration for Git operations",
+      "tools": [
+        {
+          "name": "git_status",
+          "description": "Shows the current Git status",
+          "parameters": []
+        },
+        {
+          "name": "git_commit",
+          "description": "Commits changes with a message",
+          "parameters": [
+            {
+              "name": "message",
+              "description": "Commit message",
+              "required": true
+            },
+            {
+              "name": "files",
+              "description": "Comma-separated list of files to commit (or 'all' for all changes)",
+              "required": true
+            }
+          ]
+        },
+        {
+          "name": "git_push",
+          "description": "Pushes commits to remote repository",
+          "parameters": [
+            {
+              "name": "remote",
+              "description": "Remote name (default: origin)",
+              "required": false
+            },
+            {
+              "name": "branch",
+              "description": "Branch name (default: current branch)",
+              "required": false
+            }
+          ]
+        },
+        {
+          "name": "git_pull",
+          "description": "Pulls changes from remote repository",
+          "parameters": [
+            {
+              "name": "remote",
+              "description": "Remote name (default: origin)",
+              "required": false
+            },
+            {
+              "name": "branch",
+              "description": "Branch name (default: current branch)",
+              "required": false
+            }
+          ]
+        },
+        {
+          "name": "git_branch",
+          "description": "Creates or switches branches",
+          "parameters": [
+            {
+              "name": "name",
+              "description": "Branch name",
+              "required": true
+            },
+            {
+              "name": "create",
+              "description": "Create new branch (true/false)",
+              "required": false
+            }
+          ]
+        }
+      ]
+    }
+  }
 }

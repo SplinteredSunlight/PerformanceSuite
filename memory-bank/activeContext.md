@@ -1,141 +1,53 @@
 # Active Context: Performance Suite
 
-## Current Work Focus
+This file tracks the project's current status, including recent changes, current goals, and open questions.
+2025-04-16 13:07:00 - Updated to reflect Phase 1 implementation planning with two-machine architecture.
+2025-04-16 13:45:00 - Added MCP servers for task management and GitHub Desktop integration.
 
-The project is transitioning from the initial planning and architecture phase to early implementation. The primary focus is on:
+## Current Focus
 
-1. Implementing core components based on the established architecture
-2. Developing and testing the audio analysis pipeline
-3. Setting up the development environment and toolchain
-4. Creating functional prototypes for key subsystems
+* Implementing Phase 1 of the Performance Suite with a two-machine architecture
+* Setting up development environments on Mac Mini M4 (16GB) and Mac Studio M4 (64GB)
+* Establishing network connectivity between the two machines
+* Implementing basic audio analysis pipeline on Machine 1 (Mac Mini)
+* Creating simple agent system prototype on Machine 1 (Mac Mini)
+* Setting up basic rendering pipeline on Machine 2 (Mac Studio)
+* Integrating components across machines with low-latency communication
+* Setting up MCP servers for improved workflow and task management
 
 ## Recent Changes
 
-1. **Project Organization and Documentation Consolidation**:
-   - Created consolidated technical specification document in docs/technical_specification.md
-   - Moved schema files to src/schemas/ directory for better organization
-   - Relocated utility tools to scripts/ directory
-   - Updated README.md to reflect the new project structure
-   - Removed redundant documentation files to streamline the project
+* [2025-04-16 13:45:00] Added MCP servers for task management and GitHub Desktop integration
+* [2025-04-16 13:45:00] Created documentation for MCP server usage
+* [2025-04-16 13:05:00] Created detailed Phase 1 implementation plan with two-machine architecture
+* [2025-04-16 13:00:00] Decided on machine roles: Mac Mini for audio processing, Mac Studio for rendering
+* [2025-04-16 00:39:00] Updated MCP integration plan to include Godot and Audio Analysis MCP servers
+* [2025-04-16 00:37:00] Created expanded MCP integration opportunities document
+* [2025-04-16 00:33:00] Created detailed MCP integration plan with phased approach
+* [2025-04-16 00:32:00] Defined interfaces for MCP adapters and integration components
+* [2025-04-16 00:31:00] Created setup guide for MCP integration
+* [2025-04-16 00:30:00] Created GitHub issue templates for MCP integration tasks
+* [2025-04-16 00:04:00] Implemented bidirectional GitHub-Memory Bank integration
 
-2. **Comprehensive Technical Specification Integration**:
-   - Incorporated detailed technical specification into a single comprehensive document
-   - Updated system architecture with more detailed component relationships
-   - Added MCP server integration details
-   - Refined performance requirements with specific latency budgets
-   - Enhanced testing procedures with detailed methodologies
+## Open Questions/Issues
 
-3. **Initial Memory Bank Setup**:
-   - Created all core Memory Bank files with comprehensive documentation
-   - Established project vision, architecture, and technical requirements
-
-4. **GitHub Repository Setup**:
-   - Created GitHub repository at github.com/SplinteredSunlight/PerformanceSuite
-   - Set up issue templates for features, bugs, and research spikes
-   - Added pull request template
-   - Created initial CI workflow
-   - Added contributing guidelines and license
-
-5. **Development Environment Setup**:
-   - Created basic project structure with Python modules
-   - Implemented core components (audio analysis, agent system, MIDI generation, animation control)
-   - Added configuration system and main application class
-   - Created basic tests for core components
-
-6. **Audio Analysis Pipeline Implementation**:
-   - Created AudioInputHandler for real-time audio capture
-   - Enhanced AudioAnalyzer with comprehensive feature extraction
-   - Implemented multi-threaded audio processing in main application
-   - Added unit tests for audio analysis components
-   - Updated configuration to support different analysis modes
-
-7. **GitHub Project Management Setup**:
-   - Configured GitHub Projects with custom fields (Priority, Component, Effort)
-   - Created multiple project views (Board, Roadmap, Component, Priority)
-   - Set up project automation workflows for issue and PR management
-   - Added milestone tracking and synchronization
-   - Created additional issue templates for technical debt and performance optimization
-
-## Next Steps
-
-1. **System Architecture Refinement**:
-   - Finalize the agent system architecture
-   - Define precise communication protocols between components
-   - Establish data flow patterns for audio and control signals
-
-2. **Development Environment Completion**:
-   - Configure Python environment with required dependencies
-   - Set up version control and CI/CD pipeline
-   - Establish development workflow and coding standards
-
-3. **Prototype Development**:
-   - Develop simple agent system with basic musical response
-   - Implement minimal OSC communication between machines
-   - Set up basic rendering pipeline for avatar visualization
-
-4. **Testing Framework**:
-   - Develop benchmarking tools for latency measurement
-   - Create test datasets for audio analysis validation
-   - Establish integration testing methodology
-
-## Active Decisions & Considerations
-
-1. **Game Engine Selection**:
-   - Evaluating Godot, Unity, and Unreal for the rendering system
-   - Considering factors: performance, ease of integration, licensing, development speed
-   - Need to determine which provides the best balance for real-time avatar animation
-
-2. **Agent System Architecture**:
-   - Deciding between centralized vs. distributed agent coordination
-   - Evaluating different communication patterns between agents
-   - Considering trade-offs between flexibility and performance
-
-3. **Audio Analysis Approach**:
-   - Evaluating different feature extraction techniques for musical understanding
-   - Considering real-time constraints vs. analysis depth
-   - Exploring machine learning vs. rule-based approaches for context recognition
-
-4. **Inter-Machine Communication**:
-   - Determining optimal protocol mix (OSC, WebSockets, custom protocols)
-   - Evaluating serialization formats for complex data structures
-   - Considering network reliability and fault tolerance mechanisms
-
-5. **MCP Server Integration**:
-   - Evaluating implementation options for Model Context Protocol servers
-   - Considering deployment strategies (local vs. remote)
-   - Assessing performance impact and latency requirements
-
-## Important Patterns & Preferences
-
-1. **Development Methodology**:
-   - Iterative development with frequent testing
-   - Component-based design with clear interfaces
-   - Performance-first mindset for critical paths
-
-2. **Code Organization**:
-   - Modular architecture with well-defined boundaries
-   - Clear separation of concerns between components
-   - Comprehensive documentation of interfaces and behaviors
-
-3. **Performance Optimization**:
-   - Early identification of performance bottlenecks
-   - Regular profiling and benchmarking
-   - Optimization of critical paths for latency reduction
-
-4. **Testing Philosophy**:
-   - Comprehensive unit testing for core components
-   - End-to-end testing for critical user journeys
-   - Performance testing as a first-class concern
-
-## Learnings & Project Insights
-
-As the project is in its initial stages, this section will be populated as development progresses and insights are gained. Key areas to monitor include:
-
-1. Real-world latency measurements vs. theoretical estimates
-2. Practical challenges in musical context recognition
-3. Effectiveness of different agent coordination strategies
-4. Performance implications of various rendering approaches
-5. User experience feedback from early prototypes
-6. MCP server performance and reliability in real-world conditions
-2025-04-15 18:46:01 - Updated GitHub repository with project restructuring changes
-2025-04-15 20:00:55 - Enhanced GitHub repository with project management features
+* What is the optimal network configuration for low-latency communication between machines?
+* How will we handle synchronization between the audio processing and rendering machines?
+* What is the expected end-to-end latency with the two-machine architecture?
+* How will we implement fallback mechanisms if network communication is interrupted?
+* What are the specific performance benchmarks for Phase 1 prototypes?
+* How will we measure and optimize latency across the distributed system?
+* What are the specific capabilities and limitations of Universal Control for development?
+* How will we handle audio interface sharing or routing between machines if needed?
+* What are the specific performance characteristics of the MCP servers?
+* How will the system handle network interruptions or MCP server unavailability?
+* What is the expected latency overhead of using MCP servers vs. direct implementation?
+* How will the Google ADK bandmate agents communicate with each other?
+* What are the authentication and security requirements for MCP server access?
+* How will the system handle version compatibility between MCP servers and our application?
+* What are the resource requirements for running multiple MCP servers simultaneously?
+* How will we prioritize the implementation of the different MCP servers?
+* What are the specific capabilities and limitations of the Godot MCP Server?
+* How can we optimize the Audio Analysis MCP Server for real-time performance?
+* How will the task management MCP server interact with the Memory Bank synchronization process?
+* Should we create additional MCP servers for other tools (e.g., Blender, Ableton)?
