@@ -42,6 +42,16 @@ This script focuses on removing extended attributes from files and configuring G
 ./scripts/fix_git_extended_attributes.sh
 ```
 
+### 4. `fix_config_yaml.sh`
+
+This script specifically fixes issues with `config.yaml` showing as untracked or modified in Git.
+
+```bash
+./scripts/fix_config_yaml.sh
+```
+
+Use this script if you're still seeing issues with `config.yaml` after running the other scripts.
+
 ## When to Use
 
 Run these scripts when:
