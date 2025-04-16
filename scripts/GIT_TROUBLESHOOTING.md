@@ -62,6 +62,16 @@ This script modifies VSCode's workspace settings (not global settings) to ignore
 
 This is the most aggressive approach and should be used if none of the other scripts work. It creates a `.vscode/settings.json` file in your workspace with specific settings to ignore problematic files.
 
+### 6. `fix_all.sh`
+
+This is a master script that runs all the above scripts in the recommended order.
+
+```bash
+./scripts/fix_all.sh
+```
+
+Use this script if you want to apply all fixes at once. It will run all the scripts and make sure `config.yaml` is both properly tracked by Git and visible in VSCode.
+
 ## When to Use
 
 Run these scripts when:
@@ -72,7 +82,19 @@ Run these scripts when:
 
 ## Recommended Order
 
-If you're experiencing Git integration issues, try these scripts in the following order:
+If you're experiencing Git integration issues, you can either:
+
+### Option 1: Run the master script
+
+This will run all the fix scripts in the recommended order:
+
+```bash
+./scripts/fix_all.sh
+```
+
+### Option 2: Run scripts individually
+
+Try these scripts in the following order:
 
 1. `fix_git_extended_attributes.sh` - Basic fix for extended attributes
 2. `fix_vscode_git.sh` - Comprehensive fix including VSCode global settings
