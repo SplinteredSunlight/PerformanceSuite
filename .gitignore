@@ -127,3 +127,6 @@ config.local.yaml
 test_roo_operations.py
 test_apply_diff.xml
 test_diff.txt
+
+# Backup files
+*.bak
