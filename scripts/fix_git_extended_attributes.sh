@@ -40,6 +40,17 @@ echo "Setting Git to assume unchanged for problematic files..."
 git update-index --assume-unchanged config.yaml .roo/system-prompt-architect 2>/dev/null
 echo "✅ Set Git to assume unchanged for known problematic files"
 
+# Step 3.5: Special handling for config.yaml
+echo "Special handling for config.yaml..."
+if [ -f "config.yaml" ]; then
+    echo "  Creating clean copy of config.yaml..."
+    cat config.yaml > config_temp.yaml
+    mv config_temp.yaml config.yaml
+    echo "  Setting Git to skip worktree for config.yaml..."
+    git update-index --skip-worktree config.yaml
+    echo "✅ Applied special handling for config.yaml"
+fi
+
 # Step 4: Refresh Git status
 git status
 echo "✅ Refreshed Git status"
