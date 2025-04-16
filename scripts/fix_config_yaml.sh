@@ -17,15 +17,16 @@ echo "✅ Removed assume-unchanged flag"
 # Step 3: Create a clean copy of config.yaml
 echo "3. Creating a clean copy of config.yaml..."
 if [ -f "config.yaml" ]; then
-    # Save the content
-    content=$(cat config.yaml)
+    # Create a backup
+    cp config.yaml config.yaml.bak
+    echo "✅ Created backup of config.yaml"
     
     # Remove the file
     rm config.yaml
+    echo "✅ Removed original config.yaml"
     
     # Create a new file with the same content
-    echo "$content" > config.yaml
-    
+    cat config.yaml.bak > config.yaml
     echo "✅ Created clean copy of config.yaml"
 else
     echo "❌ config.yaml not found"
