@@ -1,0 +1,21 @@
+{
+  "git.ignoredRepositories": [
+    ".roo"
+  ],
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    ".roo/system-prompt-architect": false
+  },
+  "git.ignoreWindowsGit27Warning": true,
+  "git.ignoreMissingGitWarning": true,
+  "git.enabled": true,
+  "git.autorefresh": true,
+  "git.autoRepositoryDetection": true,
+  "git.detectSubmodules": true,
+  "git.detectSubmodulesLimit": 10
+}

@@ -73,7 +73,7 @@ yarn-error.log
 
 # IDEs and Editors
 .idea/
-.vscode/
+# .vscode/ - Keeping this commented out as we're using it for Git integration settings
 *.swp
 *.swo
 *~
