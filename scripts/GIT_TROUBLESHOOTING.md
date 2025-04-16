@@ -52,6 +52,16 @@ This script specifically fixes issues with `config.yaml` showing as untracked or
 
 Use this script if you're still seeing issues with `config.yaml` after running the other scripts.
 
+### 5. `fix_vscode_workspace.sh`
+
+This script modifies VSCode's workspace settings (not global settings) to ignore specific files in Git integration.
+
+```bash
+./scripts/fix_vscode_workspace.sh
+```
+
+This is the most aggressive approach and should be used if none of the other scripts work. It creates a `.vscode/settings.json` file in your workspace with specific settings to ignore problematic files.
+
 ## When to Use
 
 Run these scripts when:
@@ -59,6 +69,17 @@ Run these scripts when:
 1. You see files incorrectly showing as modified in VSCode's Git integration
 2. You've made no actual changes to the files but they still show as modified
 3. After pulling changes from a remote repository
+
+## Recommended Order
+
+If you're experiencing Git integration issues, try these scripts in the following order:
+
+1. `fix_git_extended_attributes.sh` - Basic fix for extended attributes
+2. `fix_vscode_git.sh` - Comprehensive fix including VSCode global settings
+3. `fix_config_yaml.sh` - Specific fix for config.yaml issues
+4. `fix_vscode_workspace.sh` - Most aggressive approach using workspace settings
+
+After running each script, restart VSCode completely and check if the issue is resolved before trying the next script.
 
 ## After Running the Scripts
 
