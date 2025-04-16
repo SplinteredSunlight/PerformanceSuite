@@ -78,8 +78,8 @@ try {
     };
   }
   
-  // Add config.yaml to files.exclude
-  settings['files.exclude']['**/config.yaml'] = true;
+  // Add config.yaml to files.exclude but set to false to keep it visible
+  settings['files.exclude']['**/config.yaml'] = false;
 
   // Write the updated settings back
   fs.writeFileSync(workspacePath, JSON.stringify(settings, null, 2), 'utf8');

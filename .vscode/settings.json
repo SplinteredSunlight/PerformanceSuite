@@ -16,7 +16,7 @@
     "**/.DS_Store": true,
     "**/Thumbs.db": true,
     ".roo/system-prompt-architect": false,
-    "**/config.yaml": true
+    "**/config.yaml": false
   },
   "git.ignoreWindowsGit27Warning": true,
   "git.ignoreMissingGitWarning": true,
