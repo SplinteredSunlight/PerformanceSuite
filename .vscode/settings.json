@@ -4,7 +4,9 @@
   ],
   "git.ignoredFiles": [
     "config.yaml",
-    ".roo/system-prompt-architect"
+    ".roo/system-prompt-architect",
+    "**/config.yaml",
+    "**/.roo/system-prompt-architect"
   ],
   "files.exclude": {
     "**/.git": true,
@@ -13,7 +15,8 @@
     "**/CVS": true,
     "**/.DS_Store": true,
     "**/Thumbs.db": true,
-    ".roo/system-prompt-architect": false
+    ".roo/system-prompt-architect": false,
+    "**/config.yaml": true
   },
   "git.ignoreWindowsGit27Warning": true,
   "git.ignoreMissingGitWarning": true,
@@ -21,5 +24,7 @@
   "git.autorefresh": true,
   "git.autoRepositoryDetection": true,
   "git.detectSubmodules": true,
-  "git.detectSubmodulesLimit": 10
+  "git.detectSubmodulesLimit": 10,
+  "git.ignoreLimitWarning": true,
+  "git.decorations.enabled": true
 }
