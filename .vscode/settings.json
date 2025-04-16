@@ -2,6 +2,10 @@
   "git.ignoredRepositories": [
     ".roo"
   ],
+  "git.ignoredFiles": [
+    "config.yaml",
+    ".roo/system-prompt-architect"
+  ],
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,
