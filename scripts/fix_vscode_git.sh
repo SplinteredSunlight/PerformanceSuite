@@ -40,7 +40,36 @@ if [ $? -eq 0 ]; then
     fi
     
     echo ""
-    echo "All fixes have been applied. Please restart VSCode for the changes to take effect."
+    echo "5. Checking for .gitattributes file..."
+if [ -f ".gitattributes" ]; then
+    echo "✅ .gitattributes file exists"
+else
+    echo "  Creating .gitattributes file..."
+    cat > .gitattributes << 'EOL'
+# Git attributes for specific files
+# This file tells Git how to handle specific files
+
+# Ignore changes to config.yaml
+config.yaml binary
+config.yaml -diff
+config.yaml -merge
+config.yaml -text
+
+# Ignore changes to .roo/system-prompt-architect
+.roo/system-prompt-architect binary
+.roo/system-prompt-architect -diff
+.roo/system-prompt-architect -merge
+.roo/system-prompt-architect -text
+EOL
+    echo "✅ Created .gitattributes file"
+    
+    echo "  Adding .gitattributes to Git..."
+    git add .gitattributes
+    git commit -m "Add .gitattributes to ignore changes to config.yaml and .roo/system-prompt-architect" > /dev/null 2>&1
+    echo "✅ Added .gitattributes to Git"
+fi
+
+echo "\nAll fixes have been applied. Please restart VSCode for the changes to take effect."
     echo ""
     echo "If you still see files marked as modified in VSCode after restarting:"
     echo "1. Try running this script again"
