@@ -18,11 +18,15 @@ python-rtmidi>=1.4.9
 python-osc>=1.8.0
 websockets>=10.0
 
+# Remote Control
+paramiko>=3.0.0
+
 # Utilities
 pyyaml>=6.0
 matplotlib>=3.5.0
 tqdm>=4.62.0
 python-dotenv>=1.0.0
+psutil>=5.9.0
 
 # GitHub Integration
 PyGithub>=2.0.0

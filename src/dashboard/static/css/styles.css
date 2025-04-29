@@ -1,0 +1,825 @@
+/* Base Styles */
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2c3e50;
+    --success-color: #2ecc71;
+    --warning-color: #f39c12;
+    --danger-color: #e74c3c;
+    --light-color: #ecf0f1;
+    --dark-color: #1a1a1a;
+    --darker-color: #121212;
+    --text-color: #e0e0e0;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    --border-radius: 8px;
+    
+    /* Border Colors */
+    --border-blue: #3498db;
+    --border-orange: #e67e22;
+    --border-purple: #9b59b6;
+    --border-green: #2ecc71;
+    
+    /* Text Colors to complement borders */
+    --text-blue: #74b9ff;
+    --text-orange: #ffa07a;
+    --text-purple: #d6a2e8;
+    --text-green: #7bed9f;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--darker-color);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1800px; /* Increased from 1400px to make the display wider */
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header Styles */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #333;
+}
+
+header h1 {
+    color: var(--text-color);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Server Status Indicators */
+.server-status-indicators {
+    display: flex;
+    gap: 10px;
+}
+
+.server-status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    position: relative;
+}
+
+.server-status-icon {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.server-status-icon.running {
+    background-color: var(--success-color);
+    box-shadow: 0 0 5px var(--success-color);
+}
+
+.server-status-icon.stopped {
+    background-color: var(--danger-color);
+    box-shadow: 0 0 5px var(--danger-color);
+}
+
+.server-status-name {
+    font-size: 0.8rem;
+    color: var(--text-color);
+    white-space: nowrap;
+}
+
+.server-status-tooltip {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    z-index: 100;
+    margin-top: 5px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+
+.server-status-indicator:hover .server-status-tooltip {
+    opacity: 1;
+}
+
+.header-actions button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.header-actions button:hover {
+    background-color: #2980b9;
+}
+
+/* Card Styles */
+.card {
+    background-color: var(--dark-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.card h2 {
+    color: var(--text-color);
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #333;
+}
+
+/* Resizable Cards */
+.resizable {
+    position: relative;
+}
+
+.resize-handle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    cursor: nwse-resize;
+    z-index: 10;
+}
+
+.resize-handle-se {
+    bottom: 5px;
+    right: 5px;
+}
+
+/* Dashboard Grid Layout */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr); /* Increased from 4 to 6 columns */
+    grid-template-rows: auto auto auto auto;
+    gap: 20px;
+}
+
+/* MCP Servers Section */
+.mcp-servers {
+    grid-column: 1 / 7; /* Span all 6 columns */
+    grid-row: 1;
+    border-left: 4px solid var(--border-green);
+    min-height: 150px;
+}
+
+.mcp-servers h2 {
+    color: var(--text-green);
+}
+
+.mcp-servers-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 10px 0;
+}
+
+.mcp-server-card {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: var(--border-radius);
+    padding: 15px;
+    flex: 1;
+    min-width: 250px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mcp-server-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mcp-server-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.mcp-server-status {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.status-running {
+    background-color: rgba(46, 204, 113, 0.2);
+    color: #2ecc71;
+}
+
+.status-stopped {
+    background-color: rgba(231, 76, 60, 0.2);
+    color: #e74c3c;
+}
+
+.mcp-server-description {
+    color: #aaa;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.mcp-server-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.mcp-server-actions button {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 4px;
+    color: var(--text-color);
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.mcp-server-actions button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.mcp-server-actions button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.mcp-server-actions button.start-btn {
+    background-color: rgba(46, 204, 113, 0.2);
+}
+
+.mcp-server-actions button.start-btn:hover {
+    background-color: rgba(46, 204, 113, 0.3);
+}
+
+.mcp-server-actions button.stop-btn {
+    background-color: rgba(231, 76, 60, 0.2);
+}
+
+.mcp-server-actions button.stop-btn:hover {
+    background-color: rgba(231, 76, 60, 0.3);
+}
+
+.mcp-server-actions button.restart-btn {
+    background-color: rgba(243, 156, 18, 0.2);
+}
+
+.mcp-server-actions button.restart-btn:hover {
+    background-color: rgba(243, 156, 18, 0.3);
+}
+
+.loading-indicator {
+    text-align: center;
+    color: #777;
+    padding: 20px 0;
+}
+
+.overview {
+    grid-column: 1 / 3;
+    grid-row: 2;
+    min-height: 350px; /* Increased from 300px to give more space for the chart */
+    border-left: 4px solid var(--border-blue);
+}
+
+.overview h2, .overview .stat-label {
+    color: var(--text-blue);
+}
+
+.task-board {
+    grid-column: 3 / 7; /* Increased width to span 4 columns instead of 2 */
+    grid-row: 2 / 4;
+    border-left: 4px solid var(--border-orange);
+}
+
+.task-board h2, .task-board h3 {
+    color: var(--text-orange);
+}
+
+.gantt-view {
+    grid-column: 1 / 3;
+    grid-row: 3;
+    border-left: 4px solid var(--border-purple);
+}
+
+.gantt-view h2 {
+    color: var(--text-purple);
+}
+
+.component-progress {
+    grid-column: 1 / 7; /* Span all 6 columns */
+    grid-row: 4;
+    border-left: 4px solid var(--border-blue);
+}
+
+.component-progress h2 {
+    color: var(--text-blue);
+}
+
+.task-details {
+    grid-column: 1 / 7; /* Span all 6 columns */
+    grid-row: 5;
+    border-left: 4px solid var(--border-purple);
+}
+
+.task-details h2 {
+    color: var(--text-purple);
+}
+
+/* System Diagram Section */
+.system-diagram {
+    grid-column: 1 / 7; /* Span all 6 columns */
+    grid-row: 6;
+    border-left: 4px solid var(--border-green);
+    min-height: 400px;
+}
+
+.system-diagram h2 {
+    color: var(--text-green);
+}
+
+/* Overview Section Styles */
+.overview-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 15px;
+    padding-top: 10px; /* Added padding to move stats down a bit */
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    display: block;
+    font-size: 2.5rem; /* Increased from 2rem */
+    font-weight: bold;
+    color: var(--text-color);
+    margin-bottom: 5px; /* Added margin to separate value from label */
+}
+
+.stat-label {
+    font-size: 1rem; /* Increased from 0.9rem */
+}
+
+.chart-container {
+    height: 200px; /* Increased from 150px to give more space for the chart */
+    margin-top: 20px; /* Added margin to move chart down */
+    position: relative; /* Added to ensure proper positioning */
+}
+
+/* Task Board Styles */
+.board-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding-bottom: 10px;
+    max-height: 600px; /* Increased from 500px */
+}
+
+.board-column {
+    flex: 1;
+    min-width: 260px; /* Decreased from 280px for better fit */
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: var(--border-radius);
+    padding: 12px; /* Increased from 10px */
+    margin: 0 2px; /* Added margin for better separation */
+}
+
+.board-column h3 {
+    text-align: center;
+    padding: 8px; /* Decreased from 10px */
+    margin-bottom: 12px; /* Increased from 10px */
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+    font-size: 0.9rem; /* Decreased from 1rem */
+    letter-spacing: 0.5px; /* Added letter spacing */
+}
+
+.task-list {
+    min-height: 300px;
+    max-height: 500px; /* Increased from 400px */
+    overflow-y: auto;
+}
+
+/* Task Card Styles */
+.task-card {
+    background-color: var(--dark-color);
+    border-radius: var(--border-radius);
+    padding: 14px; /* Increased from 12px */
+    margin-bottom: 12px; /* Increased from 10px */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-left: 3px solid var(--border-blue);
+    word-wrap: break-word; /* Ensure text wraps properly */
+    min-height: 90px; /* Ensure consistent height */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.task-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.task-card h4 {
+    font-size: 0.85rem; /* Decreased from 0.95rem */
+    margin-bottom: 6px;
+    color: var(--text-color);
+    line-height: 1.3; /* Added line height for better spacing */
+}
+
+.task-id {
+    font-size: 0.75rem; /* Decreased from 0.8rem */
+    color: #999;
+    margin-bottom: 6px;
+}
+
+.task-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem; /* Decreased from 0.8rem */
+    margin-top: auto; /* Push to bottom of flex container */
+}
+
+.task-priority {
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.priority-high {
+    background-color: rgba(231, 76, 60, 0.2);
+    color: #e74c3c;
+}
+
+.priority-medium {
+    background-color: rgba(243, 156, 18, 0.2);
+    color: #f39c12;
+}
+
+.priority-low {
+    background-color: rgba(46, 204, 113, 0.2);
+    color: #2ecc71;
+}
+
+/* Component Progress Styles */
+.component-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Increased from 200px */
+    gap: 15px;
+}
+
+.component-card {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: var(--border-radius);
+    padding: 15px;
+}
+
+.component-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: var(--text-blue);
+}
+
+.progress-bar {
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: var(--primary-color);
+}
+
+.component-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #999;
+}
+
+/* Gantt Chart Styles */
+.gantt-container {
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+.gantt-chart {
+    min-height: 200px;
+    position: relative;
+}
+
+.gantt-row {
+    display: flex;
+    height: 40px; /* Increased from 30px */
+    margin-bottom: 8px; /* Increased from 5px */
+    align-items: center;
+}
+
+.gantt-label {
+    width: 250px; /* Increased from 150px */
+    padding-right: 15px;
+    text-align: right;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.gantt-timeline {
+    flex: 1;
+    height: 24px; /* Increased from 20px */
+    background-color: rgba(255, 255, 255, 0.05);
+    position: relative;
+    border-radius: 4px;
+}
+
+.gantt-bar {
+    position: absolute;
+    height: 100%;
+    background-color: var(--border-purple);
+    border-radius: 4px;
+    top: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.2s;
+}
+
+.gantt-bar:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.gantt-bar.selected {
+    box-shadow: 0 0 0 2px white;
+}
+
+.gantt-header {
+    display: flex;
+    margin-left: 250px; /* Match gantt-label width */
+    margin-bottom: 15px;
+}
+
+.gantt-ticks {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 5px;
+}
+
+.gantt-tick {
+    width: 1px;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Task Details Styles */
+.task-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.detail-item {
+    margin-bottom: 15px;
+}
+
+.detail-label {
+    font-weight: bold;
+    color: var(--text-purple);
+    margin-bottom: 5px;
+}
+
+.detail-value {
+    padding: 8px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+.placeholder-text {
+    text-align: center;
+    color: #777;
+    padding: 40px 0;
+}
+
+/* System Diagram Styles */
+.diagram-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.system-diagram-svg {
+    width: 100%;
+    max-width: 1200px;
+    height: auto;
+    margin: 0 auto;
+}
+
+.diagram-component {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.diagram-component:hover {
+    filter: brightness(1.3);
+}
+
+.diagram-tooltip {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    max-width: 300px;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.diagram-tooltip.visible {
+    opacity: 1;
+}
+
+/* Footer Styles */
+footer {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #333;
+    color: #777;
+    font-size: 0.9rem;
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Error Message */
+.error-message {
+    background-color: rgba(231, 76, 60, 0.2);
+    color: #e74c3c;
+    padding: 10px 15px;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    display: none;
+}
+
+/* Action Message */
+.action-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s, transform 0.3s;
+    max-width: 300px;
+}
+
+.action-message.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.action-message.success {
+    background-color: rgba(46, 204, 113, 0.2);
+    color: #2ecc71;
+}
+
+.action-message.error {
+    background-color: rgba(231, 76, 60, 0.2);
+    color: #e74c3c;
+}
+
+.action-message.info {
+    background-color: rgba(52, 152, 219, 0.2);
+    color: #3498db;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1600px) { /* Increased from 1200px */
+    .dashboard-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .mcp-servers, .overview, .gantt-view, .task-board, .component-progress, .task-details, .system-diagram {
+        grid-column: 1 / 3;
+    }
+    
+    .mcp-servers {
+        grid-row: 1;
+    }
+    
+    .overview {
+        grid-row: 2;
+    }
+    
+    .task-board {
+        grid-row: 3;
+    }
+    
+    .gantt-view {
+        grid-row: 4;
+    }
+    
+    .component-progress {
+        grid-row: 5;
+    }
+    
+    .task-details {
+        grid-row: 6;
+    }
+    
+    .system-diagram {
+        grid-row: 7;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .task-details-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .board-column {
+        min-width: 220px;
+    }
+    
+    .gantt-label {
+        width: 150px;
+    }
+    
+    .gantt-header {
+        margin-left: 150px;
+    }
+    
+    .mcp-servers-container {
+        flex-direction: column;
+    }
+    
+    .server-status-indicators {
+        display: none;
+    }
+}

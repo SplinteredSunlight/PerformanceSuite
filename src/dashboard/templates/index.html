@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Suite Dashboard</title>
+    <link rel="stylesheet" href="/static/css/styles.css?t=20250417">
+    <!-- Include Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Force cache refresh -->
+    <script>
+        // Add timestamp to prevent caching
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Force refresh script running...');
+            
+            // Add timestamp to CSS files
+            const cssLinks = document.querySelectorAll('link[rel="stylesheet"]');
+            cssLinks.forEach(link => {
+                if (link.href.includes('/static/')) {
+                    const url = new URL(link.href);
+                    url.searchParams.set('t', Date.now());
+                    link.href = url.toString();
+                }
+            });
+            
+            // Add timestamp to JS files
+            const scriptTags = document.querySelectorAll('script[src]');
+            scriptTags.forEach(script => {
+                if (script.src.includes('/static/')) {
+                    const url = new URL(script.src);
+                    url.searchParams.set('t', Date.now());
+                    script.src = url.toString();
+                }
+            });
+            
+            console.log('Force refresh complete');
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Performance Suite Dashboard</h1>
+            <div class="header-actions">
+                <div id="server-status-indicators" class="server-status-indicators"></div>
+                <button id="refresh-btn" title="Refresh Data"><i class="fas fa-sync-alt"></i></button>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- MCP Servers Section -->
+            <section class="card mcp-servers resizable">
+                <h2>MCP Servers</h2>
+                <div class="mcp-servers-container" id="mcp-servers-container">
+                    <div class="loading-indicator">Loading MCP server status...</div>
+                </div>
+                <div class="resize-handle resize-handle-se"></div>
+            </section>
+            
+            <!-- Project Overview Section -->
+            <section class="card overview resizable">
+                <h2>Project Overview</h2>
+                <div class="overview-stats">
+                    <div class="stat-item">
+                        <span class="stat-value" id="total-tasks">0</span>
+                        <span class="stat-label">Total Tasks</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="completion-rate">0%</span>
+                        <span class="stat-label">Completion</span>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="status-chart"></canvas>
+                </div>
+                <div class="resize-handle resize-handle-se"></div>
+            </section>
+
+            <!-- Task Board Section -->
+            <section class="card task-board resizable">
+                <h2>Task Board</h2>
+                <div class="board-container">
+                    <div class="board-column">
+                        <h3>Not Started</h3>
+                        <div class="task-list" id="not-started-tasks"></div>
+                    </div>
+                    <div class="board-column">
+                        <h3>In Progress</h3>
+                        <div class="task-list" id="in-progress-tasks"></div>
+                    </div>
+                    <div class="board-column">
+                        <h3>Blocked</h3>
+                        <div class="task-list" id="blocked-tasks"></div>
+                    </div>
+                    <div class="board-column">
+                        <h3>Completed</h3>
+                        <div class="task-list" id="completed-tasks"></div>
+                    </div>
+                </div>
+                <div class="resize-handle resize-handle-se"></div>
+            </section>
+
+            <!-- System Diagram Section -->
+            <section class="card system-diagram resizable">
+                <h2>System Architecture</h2>
+                <div class="diagram-container">
+                    <svg class="system-diagram-svg" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Audio Analysis Component -->
+                        <g class="diagram-component" id="audio-analysis" data-component="Audio Analysis">
+                            <rect x="100" y="100" width="180" height="100" rx="10" fill="#3498db" opacity="0.8" />
+                            <text x="190" y="150" text-anchor="middle" fill="white" font-weight="bold">Audio Analysis</text>
+                            <text x="190" y="175" text-anchor="middle" fill="white" font-size="12">Input Processing & Feature Extraction</text>
+                        </g>
+
+                        <!-- Agent System Component -->
+                        <g class="diagram-component" id="agent-system" data-component="Agent System">
+                            <rect x="410" y="100" width="180" height="100" rx="10" fill="#9b59b6" opacity="0.8" />
+                            <text x="500" y="150" text-anchor="middle" fill="white" font-weight="bold">Agent System</text>
+                            <text x="500" y="175" text-anchor="middle" fill="white" font-size="12">Virtual Musicians & Coordination</text>
+                        </g>
+
+                        <!-- MIDI Generation Component -->
+                        <g class="diagram-component" id="midi-generation" data-component="MIDI Generation">
+                            <rect x="720" y="100" width="180" height="100" rx="10" fill="#e74c3c" opacity="0.8" />
+                            <text x="810" y="150" text-anchor="middle" fill="white" font-weight="bold">MIDI Generation</text>
+                            <text x="810" y="175" text-anchor="middle" fill="white" font-size="12">Musical Output Creation</text>
+                        </g>
+
+                        <!-- Rendering Component -->
+                        <g class="diagram-component" id="rendering" data-component="Rendering">
+                            <rect x="410" y="300" width="180" height="100" rx="10" fill="#e67e22" opacity="0.8" />
+                            <text x="500" y="350" text-anchor="middle" fill="white" font-weight="bold">Rendering</text>
+                            <text x="500" y="375" text-anchor="middle" fill="white" font-size="12">Visual Performance Output</text>
+                        </g>
+
+                        <!-- Infrastructure Component -->
+                        <rect x="100" y="300" width="180" height="100" rx="10" fill="#2ecc71" opacity="0.8" class="diagram-component" id="infrastructure" data-component="Infrastructure" />
+                        <text x="190" y="350" text-anchor="middle" fill="white" font-weight="bold">Infrastructure</text>
+                        <text x="190" y="375" text-anchor="middle" fill="white" font-size="12">Hardware & Network Setup</text>
+
+                        <!-- OSC Communication Component -->
+                        <rect x="720" y="300" width="180" height="100" rx="10" fill="#f39c12" opacity="0.8" class="diagram-component" id="osc-communication" data-component="OSC Communication" />
+                        <text x="810" y="350" text-anchor="middle" fill="white" font-weight="bold">OSC Communication</text>
+                        <text x="810" y="375" text-anchor="middle" fill="white" font-size="12">Inter-machine Messaging</text>
+
+                        <!-- Connection Lines -->
+                        <line x1="280" y1="150" x2="410" y2="150" stroke="white" stroke-width="3" />
+                        <line x1="590" y1="150" x2="720" y2="150" stroke="white" stroke-width="3" />
+                        <line x1="500" y1="200" x2="500" y2="300" stroke="white" stroke-width="3" />
+                        <line x1="280" y1="350" x2="410" y2="350" stroke="white" stroke-width="3" />
+                        <line x1="590" y1="350" x2="720" y2="350" stroke="white" stroke-width="3" />
+                        <line x1="190" y1="200" x2="190" y2="300" stroke="white" stroke-width="3" />
+                        <line x1="810" y1="200" x2="810" y2="300" stroke="white" stroke-width="3" />
+                    </svg>
+                    <div class="diagram-tooltip" id="diagram-tooltip"></div>
+                </div>
+                <div class="resize-handle resize-handle-se"></div>
+            </section>
+
+            <!-- Gantt Chart Section -->
+            <section class="card gantt-view resizable">
+                <h2>Gantt Timeline</h2>
+                <div class="gantt-container">
+                    <div class="gantt-header" id="gantt-header">
+                        <!-- Month headers will be added dynamically -->
+                    </div>
+                    <div class="gantt-chart" id="gantt-chart">
+                        <!-- Gantt rows will be added dynamically -->
+                    </div>
+                </div>
+                <div class="resize-handle resize-handle-se"></div>
+            </section>
+
+            <!-- Component Progress Section -->
+            <section class="card component-progress resizable">
+                <h2>Component Progress</h2>
+                <div class="component-grid" id="component-grid"></div>
+                <div class="resize-handle resize-handle-se"></div>
+            </section>
+
+            <!-- Task Details Section -->
+            <section class="card task-details resizable" id="task-details-section">
+                <h2>Task Details</h2>
+                <div id="task-details-content">
+                    <p class="placeholder-text">Select a task to view details</p>
+                </div>
+                <div class="resize-handle resize-handle-se"></div>
+            </section>
+        </div>
+
+        <footer>
+            <p>Performance Suite Dashboard | Last Updated: <span id="last-updated"></span></p>
+        </footer>
+    </div>
+
+    <script src="/static/js/dashboard.js?t=20250417"></script>
+    <script src="/static/js/dashboard_mcp.js?t=20250417"></script>
+</body>
+</html>

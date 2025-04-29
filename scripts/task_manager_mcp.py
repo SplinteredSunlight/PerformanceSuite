@@ -16,7 +16,7 @@ from typing import Dict, List, Optional, Any, Tuple
 # Constants
 TASK_FILE_PATH = "memory-bank/taskManagement.md"
 TASK_ID_PATTERN = r"MB-(\d+)"
-TASK_SECTION_PATTERN = r"## Current Tasks\s+### ([^\n]+)"
+TASK_PHASE_PATTERN = r"### Phase \d+: ([^\n]+)"
 TASK_ENTRY_PATTERN = r"\* ([^\n]+)\s+\* \*\*ID\*\*: (MB-\d+)\s+\* \*\*Status\*\*: ([^\n]+)\s+\* \*\*Priority\*\*: ([^\n]+)\s+\* \*\*Component\*\*: ([^\n]+)\s+\* \*\*Effort\*\*: ([^\n]+)\s+\* \*\*Description\*\*: ([^\n]+)(?:\s+\* \*\*Dependencies\*\*: ([^\n]+))?(?:\s+\* \*\*Notes\*\*: ([^\n]+))?"
 TASK_BOARD_PATTERN = r"## Task Board View\s+### Not Started\s+([\s\S]+?)(?=### In Progress|$)\s*### In Progress\s+([\s\S]+?)(?=### Blocked|$)\s*### Blocked\s+([\s\S]+?)(?=### Completed|$)\s*### Completed\s+([\s\S]+?)(?=## Task Statistics|$)"
 TASK_STATS_PATTERN = r"## Task Statistics\s+- Total Tasks: (\d+)\s+- Not Started: (\d+)\s+- In Progress: (\d+)\s+- Blocked: (\d+)\s+- Completed: (\d+)\s+- Completion Rate: ([^\n]+)\s+\s+Last Updated: ([^\n]+)"
@@ -31,6 +31,7 @@ class TaskManager:
     def __init__(self):
         self.task_file_path = TASK_FILE_PATH
         self.tasks = []
+        self.phases = []
         self.next_id = 1
         self.load_tasks()
 
@@ -39,6 +40,10 @@ class TaskManager:
         try:
             with open(self.task_file_path, 'r') as f:
                 content = f.read()
+                
+            # Extract phases
+            phase_matches = re.finditer(r"### Phase \d+: ([^\n]+)", content, re.MULTILINE)
+            self.phases = [match.group(1) for match in phase_matches]
                 
             # Extract tasks using regex
             task_matches = re.finditer(TASK_ENTRY_PATTERN, content, re.MULTILINE)
@@ -55,6 +60,15 @@ class TaskManager:
                 dependencies = match.group(8).strip() if match.group(8) else ""
                 notes = match.group(9).strip() if match.group(9) else ""
                 
+                # Determine the phase by finding the nearest phase header before this task
+                task_pos = content.find(title)
+                phase = "Unknown"
+                if task_pos > 0:
+                    content_before = content[:task_pos]
+                    phase_headers = list(re.finditer(r"### Phase \d+: ([^\n]+)", content_before, re.MULTILINE))
+                    if phase_headers:
+                        phase = phase_headers[-1].group(1)
+                
                 self.tasks.append({
                     "title": title,
                     "id": task_id,
@@ -64,7 +78,8 @@ class TaskManager:
                     "effort": effort,
                     "description": description,
                     "dependencies": dependencies,
-                    "notes": notes
+                    "notes": notes,
+                    "phase": phase
                 })
             
             # Find the highest task ID to determine the next ID
@@ -85,31 +100,37 @@ class TaskManager:
             with open(self.task_file_path, 'r') as f:
                 content = f.read()
             
-            # Update the task sections
-            for component in VALID_COMPONENTS:
-                component_tasks = [task for task in self.tasks if task["component"] == component and task["status"] != "Completed"]
-                if not component_tasks:
+            # Update the task sections by phase
+            for phase in self.phases:
+                phase_tasks = {}
+                
+                # Group tasks by component within this phase
+                for component in VALID_COMPONENTS:
+                    component_tasks = [task for task in self.tasks 
+                                      if task["component"] == component 
+                                      and task["phase"] == phase 
+                                      and task["status"] != "Completed"]
+                    if component_tasks:
+                        phase_tasks[component] = component_tasks
+                
+                if not phase_tasks:
                     continue
                 
-                component_section = f"### {component}\n\n"
-                for task in component_tasks:
-                    component_section += self._format_task(task)
+                # Create the phase section content
+                phase_section = ""
+                for component, tasks in phase_tasks.items():
+                    for task in tasks:
+                        phase_section += self._format_task(task)
                 
-                # Replace the component section in the content
-                component_pattern = f"### {component}\\s+([\\s\\S]+?)(?=###|## Completed Tasks|$)"
-                if re.search(component_pattern, content, re.MULTILINE):
-                    content = re.sub(component_pattern, f"### {component}\n\n{component_section}", content, flags=re.MULTILINE)
-            
-            # Update the completed tasks section
-            completed_tasks = [task for task in self.tasks if task["status"] == "Completed"]
-            completed_section = "## Completed Tasks\n\n"
-            for task in completed_tasks:
-                completed_section += self._format_task(task)
-            
-            # Replace the completed tasks section
-            completed_pattern = r"## Completed Tasks\s+([\s\S]+?)(?=## Task Board View|$)"
-            if re.search(completed_pattern, content, re.MULTILINE):
-                content = re.sub(completed_pattern, completed_section, content, flags=re.MULTILINE)
+                # Replace the phase section in the content
+                phase_pattern = f"### Phase \\d+: {phase}\\s+([\\s\\S]+?)(?=### Phase|## Task Board View|$)"
+                if re.search(phase_pattern, content, re.MULTILINE):
+                    # Extract the phase header
+                    phase_header_match = re.search(f"(### Phase \\d+: {phase})", content)
+                    if phase_header_match:
+                        phase_header = phase_header_match.group(1)
+                        # Replace the content after the header
+                        content = re.sub(phase_pattern, f"{phase_header}\n\n{phase_section}", content, flags=re.MULTILINE)
             
             # Update the task board view
             not_started = "\n".join([f"- {task['id']}: {task['title']}" for task in self.tasks if task["status"] == "Not Started"])
@@ -190,8 +211,8 @@ Last Updated: {now}
         result += "\n"
         return result
 
-    def list_tasks(self, status: Optional[str] = None, component: Optional[str] = None) -> List[Dict[str, str]]:
-        """List tasks, optionally filtered by status or component."""
+    def list_tasks(self, status: Optional[str] = None, component: Optional[str] = None, phase: Optional[str] = None) -> List[Dict[str, str]]:
+        """List tasks, optionally filtered by status, component, or phase."""
         filtered_tasks = self.tasks
         
         if status:
@@ -206,10 +227,16 @@ Last Updated: {now}
                 return []
             filtered_tasks = [task for task in filtered_tasks if task["component"] == component]
         
+        if phase:
+            if phase not in self.phases:
+                send_error(f"Invalid phase: {phase}. Valid phases are: {', '.join(self.phases)}")
+                return []
+            filtered_tasks = [task for task in filtered_tasks if task["phase"] == phase]
+        
         return filtered_tasks
 
     def create_task(self, title: str, description: str, component: str, priority: str, 
-                   effort: str, dependencies: Optional[str] = None) -> Dict[str, str]:
+                   effort: str, phase: str, dependencies: Optional[str] = None) -> Dict[str, str]:
         """Create a new task."""
         # Validate inputs
         if not title or not description:
@@ -228,6 +255,10 @@ Last Updated: {now}
             send_error(f"Invalid effort: {effort}. Valid efforts are: {', '.join(VALID_EFFORTS)}")
             return {}
         
+        if phase not in self.phases:
+            send_error(f"Invalid phase: {phase}. Valid phases are: {', '.join(self.phases)}")
+            return {}
+        
         # Create the new task
         task_id = f"MB-{self.next_id:03d}"
         self.next_id += 1
@@ -241,7 +272,8 @@ Last Updated: {now}
             "effort": effort,
             "description": description,
             "dependencies": dependencies or "",
-            "notes": ""
+            "notes": "",
+            "phase": phase
         }
         
         self.tasks.append(new_task)
@@ -249,7 +281,7 @@ Last Updated: {now}
         
         return new_task
 
-    def update_task(self, task_id: str, status: Optional[str] = None, notes: Optional[str] = None) -> Dict[str, str]:
+    def update_task(self, task_id: str, status: Optional[str] = None, notes: Optional[str] = None, phase: Optional[str] = None) -> Dict[str, str]:
         """Update an existing task."""
         # Find the task
         task_to_update = None
@@ -268,6 +300,12 @@ Last Updated: {now}
                 send_error(f"Invalid status: {status}. Valid statuses are: {', '.join(VALID_STATUSES)}")
                 return {}
             task_to_update["status"] = status
+        
+        if phase:
+            if phase not in self.phases:
+                send_error(f"Invalid phase: {phase}. Valid phases are: {', '.join(self.phases)}")
+                return {}
+            task_to_update["phase"] = phase
         
         if notes:
             if task_to_update["notes"]:
@@ -288,14 +326,32 @@ Last Updated: {now}
         completed = len([task for task in self.tasks if task["status"] == "Completed"])
         completion_rate = (completed / total_tasks * 100) if total_tasks > 0 else 0
         
+        # Add phase statistics
+        phase_stats = {}
+        for phase in self.phases:
+            phase_tasks = [task for task in self.tasks if task.get("phase") == phase]
+            phase_completed = len([task for task in phase_tasks if task["status"] == "Completed"])
+            phase_completion_rate = (phase_completed / len(phase_tasks) * 100) if phase_tasks else 0
+            
+            phase_stats[phase] = {
+                "total": len(phase_tasks),
+                "completed": phase_completed,
+                "completion_rate": f"{phase_completion_rate:.1f}%"
+            }
+        
         return {
             "total_tasks": total_tasks,
             "not_started": not_started,
             "in_progress": in_progress,
             "blocked": blocked,
             "completed": completed,
-            "completion_rate": f"{completion_rate:.1f}%"
+            "completion_rate": f"{completion_rate:.1f}%",
+            "phases": phase_stats
         }
+
+    def get_phases(self) -> List[str]:
+        """Get the list of project phases."""
+        return self.phases
 
 def send_response(data: Any) -> None:
     """Send a response to the MCP client."""
@@ -326,7 +382,8 @@ def handle_request(request: Dict[str, Any]) -> None:
         if tool_name == "list_tasks":
             status = params.get("status")
             component = params.get("component")
-            tasks = task_manager.list_tasks(status, component)
+            phase = params.get("phase")
+            tasks = task_manager.list_tasks(status, component, phase)
             send_response(tasks)
         
         elif tool_name == "create_task":
@@ -335,30 +392,36 @@ def handle_request(request: Dict[str, Any]) -> None:
             component = params.get("component")
             priority = params.get("priority")
             effort = params.get("effort")
+            phase = params.get("phase")
             dependencies = params.get("dependencies")
             
-            if not all([title, description, component, priority, effort]):
+            if not all([title, description, component, priority, effort, phase]):
                 send_error("Missing required parameters")
                 return
             
-            task = task_manager.create_task(title, description, component, priority, effort, dependencies)
+            task = task_manager.create_task(title, description, component, priority, effort, phase, dependencies)
             send_response(task)
         
         elif tool_name == "update_task":
             task_id = params.get("task_id")
             status = params.get("status")
             notes = params.get("notes")
+            phase = params.get("phase")
             
             if not task_id:
                 send_error("Missing required parameter: task_id")
                 return
             
-            task = task_manager.update_task(task_id, status, notes)
+            task = task_manager.update_task(task_id, status, notes, phase)
             send_response(task)
         
         elif tool_name == "get_task_statistics":
             stats = task_manager.get_task_statistics()
             send_response(stats)
+        
+        elif tool_name == "get_phases":
+            phases = task_manager.get_phases()
+            send_response(phases)
         
         else:
             send_error(f"Unknown tool: {tool_name}")

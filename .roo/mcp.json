@@ -160,6 +160,61 @@
           ]
         }
       ]
+    },
+    "remote-control": {
+      "type": "stdio",
+      "command": ["python", "scripts/remote_control_client.py"],
+      "description": "Remote Control MCP Server for controlling the Mac Studio from the Mac Mini",
+      "tools": [
+        {
+          "name": "remote_execute",
+          "description": "Execute a command on the Mac Studio",
+          "parameters": [
+            {
+              "name": "command",
+              "description": "The command to execute",
+              "required": true
+            },
+            {
+              "name": "cwd",
+              "description": "Working directory for the command (optional)",
+              "required": false
+            }
+          ]
+        },
+        {
+          "name": "remote_transfer",
+          "description": "Transfer a file to or from the Mac Studio",
+          "parameters": [
+            {
+              "name": "source",
+              "description": "Source file path",
+              "required": true
+            },
+            {
+              "name": "destination",
+              "description": "Destination file path",
+              "required": true
+            },
+            {
+              "name": "direction",
+              "description": "Transfer direction ('send' to Mac Studio, 'receive' from Mac Studio)",
+              "required": true
+            }
+          ]
+        },
+        {
+          "name": "remote_status",
+          "description": "Get system status from the Mac Studio",
+          "parameters": [
+            {
+              "name": "type",
+              "description": "Status type ('system' or 'network')",
+              "required": false
+            }
+          ]
+        }
+      ]
     }
   }
 }

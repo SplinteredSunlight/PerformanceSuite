@@ -1,0 +1,48 @@
+name: Sync GitHub Issues to Memory Bank
+
+on:
+  issues:
+    types: [opened, edited, closed, reopened, labeled, unlabeled, milestoned, demilestoned]
+  milestone:
+    types: [created, edited, closed, opened]
+  workflow_dispatch:
+    # Allow manual triggering
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests python-dotenv
+      
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+      
+      - name: Create .env file
+        run: |
+          echo "GITHUB_USERNAME=${{ github.repository_owner }}" > .env
+          echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> .env
+          echo "GITHUB_REPO=${{ github.event.repository.name }}" >> .env
+      
+      - name: Run sync script
+        run: python scripts/sync_github_issues_to_memory_bank.py
+      
+      - name: Commit and push changes
+        run: |
+          git add memory-bank/
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update Memory Bank from GitHub issues [skip ci]" && git push)
